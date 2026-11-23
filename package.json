@@ -1,0 +1,15 @@
+{
+  "name": "bandeja-live",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Bandeja Pro: torneos de pádel profesional con marcador en directo automático",
+  "scripts": {
+    "dev": "vercel dev",
+    "probe": "node scripts/probe.mjs"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0"
+  },
+  "engines": { "node": ">=18" }
+}

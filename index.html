@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bandeja Pro · Pádel en directo</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: app deportiva publicada, enérgica, de retransmisión.
+   IDEA: el videomarcador de un estadio de pádel profesional.
+   PICTURE: marcador grande tipo pantalla de pabellón con sets, juegos, puntos y saque.
+   COLOUR and TYPE: azul pista nocturno dominante, blanco, amarillo pelota de acento, coral para "en juego"; Barlow Condensed + Barlow.
+   LAYOUT: marco móvil centrado, cabecera azul, contenido, barra de pestañas inferior. */
+:root{color-scheme:light dark;
+--bg:light-dark(#eef2f8,#08101d);--card:light-dark(#fff,#111c2e);--ink:light-dark(#0d1b2e,#e8eef8);--mute:light-dark(#566579,#97a6bb);
+--line:light-dark(#dbe3ee,#22314a);--court:#1652b8;--night:#0a1f45;--ball:#e6f04a;--coral:#ff6f59;--ok:#1f9d6b}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Barlow,system-ui,sans-serif;overflow-x:clip}
+h1,h2,h3,.cd{font-family:"Barlow Condensed",Barlow,sans-serif;font-weight:700;line-height:1.05;margin:0}
+button,input,select{font:inherit;font-size:16px}button{cursor:pointer}
+:focus-visible{outline:3px solid var(--ball);outline-offset:2px}
+.app{max-width:500px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative}
+@media(min-width:580px){.app{margin:24px auto;min-height:calc(100vh - 48px);border-radius:28px;overflow:hidden;box-shadow:0 20px 60px #0a1a3a40;background:var(--bg)}}
+header{background:linear-gradient(160deg,var(--court),var(--night));color:#fff;padding:20px 18px 16px}
+header h1{font-size:36px}header p{margin:4px 0 0;color:#cfe0ff}
+main{flex:1;padding:16px 14px 100px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+.meta{color:var(--mute);font-size:14px;display:flex;flex-wrap:wrap;gap:2px 12px}.meta span{white-space:nowrap}
+.tag{display:inline-block;font-size:13px;padding:2px 9px;border-radius:999px;background:light-dark(#e4ecfa,#1b2a45);white-space:nowrap;font-weight:600}
+.tag.Major{background:var(--ball);color:#0d1b2e}.tag.P1{background:var(--court);color:#fff}.tag.Finals{background:#0d1b2e;color:var(--ball)}
+:root[data-theme=dark] .tag.Finals{background:#e8eef8;color:#0d1b2e}
+.live{color:var(--coral);font-weight:700;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.live::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--coral);animation:p 1.4s infinite}
+@keyframes p{50%{opacity:.25}}
+.btn{border:0;border-radius:12px;padding:10px 16px;min-height:44px;background:var(--court);color:#fff;font-weight:600}
+.btn.ball{background:var(--ball);color:#0d1b2e}.btn.ghost{background:transparent;color:inherit;border:1px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:default}
+.seg{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 14px;min-height:44px}
+.chip[aria-pressed=true]{background:var(--court);border-color:var(--court);color:#fff}
+/* marcador */
+.board{background:radial-gradient(120% 90% at 50% 0%,#17346e,#060d1c);color:#fff;border-radius:22px;padding:14px;box-shadow:inset 0 0 0 2px #ffffff14,0 12px 30px #06102033}
+.bt{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;color:#b9cbec;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) repeat(var(--n),34px) 64px;gap:6px;align-items:center}
+.grid .hd{font-size:12px;color:#8ea6d6;text-align:center}
+.nm{font-family:"Barlow Condensed";font-weight:700;font-size:21px;line-height:1.1;display:flex;align-items:center;gap:6px;overflow:hidden}
+.nm span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nm.two-l{font-size:18px;line-height:1.15;padding:4px 0}
+.srv{flex:none;width:12px;height:12px;border-radius:50%;background:var(--ball);box-shadow:0 0 10px var(--ball)}
+.srv.off{background:transparent;box-shadow:none;border:1px solid #ffffff30}
+.sc{font-family:"Barlow Condensed";font-weight:700;font-size:24px;text-align:center;background:#ffffff0f;border-radius:8px;padding:2px 0;color:#9fb3da}
+.sc.won{color:#fff}.sc.cur{color:#fff;background:#ffffff1f}
+.pt{font-family:"Barlow Condensed";font-weight:800;font-size:40px;text-align:center;background:var(--ball);color:#0d1b2e;border-radius:10px;line-height:1.2}
+.msg{min-height:24px;text-align:center;margin-top:10px;font-weight:600;color:var(--ball)}
+.pts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.pbtn{min-height:76px;border-radius:16px;border:0;background:var(--court);color:#fff;font-family:"Barlow Condensed";font-weight:700;font-size:20px;line-height:1.1;padding:8px}
+.pbtn small{display:block;font-family:Barlow;font-weight:500;font-size:13px;opacity:.8}
+.ctr{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.ctr .btn{flex:1 1 30%}
+label{font-weight:600;font-size:14px;display:block;margin-bottom:4px}
+input,select{width:100%;min-height:46px;border:1px solid var(--line);border-radius:12px;padding:9px 12px;background:var(--card);color:var(--ink)}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-bottom:10px}
+details summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center}
+.sec{font-size:24px;margin:20px 2px 10px}
+/* torneos */
+.tr{display:grid;grid-template-columns:62px minmax(0,1fr);gap:12px}
+.dt{text-align:center;border-radius:12px;background:light-dark(#e9effa,#17243b);padding:6px 0}
+.dt b{display:block;font-family:"Barlow Condensed";font-size:26px;line-height:1}.dt small{font-size:12px;color:var(--mute)}
+.tr h3{font-size:21px}
+.fin{margin-top:8px;font-size:14px;display:grid;gap:4px}
+.fin div{display:grid;grid-template-columns:44px minmax(0,1fr);gap:6px}
+.fin em{font-style:normal;color:var(--mute)}
+.past{opacity:.92}
+.hero{background:var(--night);color:#fff;border:0}.hero .meta{color:#cfe0ff}
+.hero h2{font-size:30px;margin:6px 0}
+/* títulos */
+.rk{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.rk:first-of-type{border-top:0}
+.rk .n{font-family:"Barlow Condensed";font-weight:700;font-size:22px;color:var(--mute);text-align:center}
+.bar{height:8px;border-radius:8px;background:var(--line);margin-top:5px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--court),var(--ball))}
+.tt{font-family:"Barlow Condensed";font-weight:700;font-size:28px}
+.note{font-size:13px;color:var(--mute);text-align:center;margin:10px 4px}
+.note a{color:inherit}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(500px,100%);display:grid;grid-template-columns:repeat(3,1fr);background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:3}
+@media(min-width:580px){nav{position:absolute;left:0;transform:none;width:100%}}
+nav button{background:none;border:0;color:var(--mute);display:grid;justify-items:center;gap:2px;min-height:52px;font-size:13px}
+nav button[aria-current=page]{color:var(--court);font-weight:700}
+:root[data-theme=dark] nav button[aria-current=page]{color:var(--ball)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) nav button[aria-current=page]{color:var(--ball)}}
+nav svg{width:24px;height:24px}
+@media(max-width:380px){.grid{grid-template-columns:minmax(0,1fr) repeat(var(--n),28px) 54px}.pt{font-size:32px}.nm{font-size:18px}}
+@keyframes fl{0%{transform:scale(1.25);background:#fff}100%{transform:scale(1)}}
+.pt.flash{animation:fl .7s ease-out}
+.row-l{display:flex;justify-content:space-between;align-items:center;gap:10px;color:var(--mute);font-size:14px;margin:4px 2px 10px}
+.btn.sm{min-height:40px;padding:6px 12px;font-size:14px}
+.empty{text-align:center;color:var(--mute);padding:26px 14px}
+@media(prefers-reduced-motion:reduce){.live::before,.pt.flash{animation:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><h1 id="title">En directo</h1><p id="sub">Marcador punto a punto</p></header>
+<main id="view"></main>
+<nav aria-label="Secciones">
+<button data-tab="directo" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="13" rx="2"/><path d="M8 21h8M9 10v3M15 10v3"/></svg>Directo</button>
+<button data-tab="torneos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Torneos</button>
+<button data-tab="titulos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8"/></svg>Títulos</button>
+</nav>
+</div>
+<script>
+{
+const TODAY=new Date();TODAY.setHours(0,0,0,0);
+// Calendario Premier Padel 2026 (FIP). [nombre, categoría, sede, inicio, fin, hombres [campeones, finalistas, resultado], mujeres [...]]
+const T=[
+['Riyadh Season','P1','Riad, Arabia Saudí','2026-02-07','2026-02-14',['Coello / Tapia','Galán / Chingotto','6-4 6-2'],['Sánchez / Ustero','Brea / Triay','3-6 6-1 6-4']],
+['Gijón','P2','Gijón, España','2026-03-01','2026-03-08',['Galán / Chingotto','Coello / Tapia','7-5 7-6'],['Brea / Triay','Sánchez / Ustero','6-4 6-7 6-3']],
+['Cancún','P2','Cancún, México','2026-03-15','2026-03-22',['Coello / Tapia','Lebrón / Augsburger','6-7 6-3 7-5'],['Brea / Triay','González / Josemaría','7-6 6-1']],
+['Miami','P1','Miami, EE. UU.','2026-03-22','2026-03-29',['Galán / Chingotto','Coello / Tapia','7-5 3-6 6-3'],['González / Josemaría','Brea / Triay','6-3 4-6 7-5']],
+['Giza','P2','Giza, Egipto','2026-04-13','2026-04-18',['Galán / Chingotto','Stupaczuk / Yanguas','6-4 6-1'],['González / Josemaría','Brea / Triay','6-4 5-7 6-4']],
+['Bruselas','P2','Bruselas, Bélgica','2026-04-20','2026-04-26',['Lebrón / Augsburger','Coello / Tapia','2-6 6-3 6-3'],['González / Josemaría','Brea / Triay','7-5 6-2']],
+['Asunción','P2','Asunción, Paraguay','2026-05-04','2026-05-10',['Galán / Chingotto','Coello / Tapia','6-3 7-5'],['González / Josemaría','Brea / Triay','4-6 6-3 6-3']],
+['Buenos Aires','P1','Buenos Aires, Argentina','2026-05-11','2026-05-17',['Galán / Chingotto','Coello / Tapia','6-2 6-1'],['González / Josemaría','Brea / Triay','6-3 7-5']],
+['Italy Major','Major','Roma, Italia','2026-06-01','2026-06-07',['Coello / Tapia','Galán / Chingotto','7-5 7-6'],['Brea / Triay','Sánchez / Ustero','6-1 7-5']],
+['Valencia','P1','Valencia, España','2026-06-08','2026-06-14',['Coello / Tapia','Galán / Chingotto','6-7 6-1 7-6'],['Sánchez / Ustero','Fernández / Araújo','6-4 3-6 6-2']],
+['Valladolid','P2','Valladolid, España','2026-06-22','2026-06-28',['Coello / Tapia','Galán / Chingotto','6-4 6-3'],['González / Josemaría','Sánchez / Ustero','6-4 6-2']],
+['Burdeos','P2','Burdeos, Francia','2026-06-29','2026-07-05',['Coello / Tapia','Galán / Chingotto','5-7 7-6 6-2'],['Jensen / Icardo','Brea / Triay','']],
+['Málaga','P1','Málaga, España','2026-07-13','2026-07-19',['Coello / Tapia','Lebrón / Augsburger','6-2 6-2'],['Brea / Triay','González / Josemaría','7-5 3-6 7-6']],
+['Pretoria','P1','Pretoria, Sudáfrica','2026-07-27','2026-08-02',['Galán / Chingotto','Guerrero / Leal','6-2 5-7 7-6'],['Brea / Triay','Fernández / Calvo','6-2 6-7 7-6']],
+['Londres','P1','Londres, Reino Unido','2026-08-03','2026-08-09',['Coello / Tapia','Galán / Chingotto','6-3 5-7 7-5'],['Fernández / Calvo','Brea / Triay','7-5 6-3']],
+['Madrid','P1','Madrid, España','2026-08-31','2026-09-06',['Galán / Chingotto','Yanguas / Nieto','6-4 5-7 6-4'],['Brea / Triay','González / Josemaría','6-7 6-3 6-3']],
+['Paris Major','Major','París, Francia','2026-09-07','2026-09-13',['Coello / Tapia','Galán / Chingotto',''],['Sánchez / Ustero','Fernández / Calvo','6-2 6-0']],
+['Rotterdam','P2','Róterdam, Países Bajos','2026-09-28','2026-10-04',['Coello / Tapia','Stupaczuk / Sanz',''],['Sánchez / Ustero','','']],
+['Düsseldorf','P2','Düsseldorf, Alemania','2026-10-05','2026-10-11',['Coello / Tapia','',''],['Fernández / Calvo','','']],
+['Milano','P1','Milán, Italia','2026-10-12','2026-10-18',['Coello / Tapia','Lebrón / Augsburger',''],['Sánchez / Ustero','González / Josemaría','']],
+['Kuwait Major','Major','Kuwait','2026-10-26','2026-10-31',['Coello / Tapia','Tello / Arce','6-1 6-1'],['Brea / Triay','Sánchez / Ustero','3-6 6-1 6-1']],
+['Dubái','P1','Dubái, EAU','2026-11-09','2026-11-15',['Lebrón / Augsburger','Libaak / Alfonso','7-6 5-7 6-3'],['Fernández / Calvo','González / Josemaría','7-5 6-1']],
+['Mexico Major','Major','Acapulco, México','2026-11-23','2026-11-29',null,null],
+['Premier Padel Finals','Finals','Barcelona, España','2026-12-07','2026-12-13',null,null]
+];
+const d=s=>new Date(s+'T00:00');
+const st=t=>TODAY<d(t[3])?'prox':TODAY>d(t[4])?'fin':'live';
+const MES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const rng=t=>{const a=d(t[3]),b=d(t[4]);return a.getMonth()===b.getMonth()?`${a.getDate()}–${b.getDate()} ${MES[b.getMonth()]}`:`${a.getDate()} ${MES[a.getMonth()]}–${b.getDate()} ${MES[b.getMonth()]}`};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const view=document.getElementById('view');
+let tab='directo',tf='todos',tg='m';
+
+/* ---------- MARCADOR ---------- */
+const KEY='bandeja-pro-score';
+const fresh=(o={})=>({a:o.a||'Pareja 1',b:o.b||'Pareja 2',ev:o.ev||'Partido',mode:o.mode||'star',bo:o.bo||3,
+  sets:[],g:[0,0],p:[0,0],tb:false,srv:0,dc:0,win:null,t0:Date.now()});
+let S;try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!S.g)S=fresh();
+let hist=[];
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const need=()=>Math.ceil(S.bo/2);
+const setsWon=i=>S.sets.filter(s=>s[i]>s[1-i]).length;
+function point(i){
+  if(S.win!==null)return;
+  hist.push(JSON.stringify(S));if(hist.length>300)hist.shift();
+  const o=1-i;S.p[i]++;
+  if(S.tb){if(S.p[i]>=7&&S.p[i]-S.p[o]>=2)game(i);else if((S.p[0]+S.p[1])%2===1)S.srv=1-S.srv}
+  else{if(S.p[0]>=3&&S.p[0]===S.p[1])S.dc=(S.dc||0)+1;
+    if(S.mode==='oro'?S.p[i]>=4:S.mode==='star'?(S.p[i]>=4&&(S.p[i]-S.p[o]>=2||S.dc>=3)):(S.p[i]>=4&&S.p[i]-S.p[o]>=2))game(i)}
+  save();render();
+}
+function game(i){
+  const o=1-i;S.g[i]++;S.p=[0,0];S.dc=0;S.srv=1-S.srv;
+  if(S.tb||(S.g[i]>=6&&S.g[i]-S.g[o]>=2)){S.sets.push([...S.g]);S.g=[0,0];S.tb=false;if(setsWon(i)>=need())S.win=i}
+  else if(S.g[0]===6&&S.g[1]===6)S.tb=true;
+}
+function ptLabel(i){
+  const o=1-i,a=S.p[i],b=S.p[o];
+  if(S.tb)return a;
+  if(a>=3&&b>=3){if(S.mode==='oro')return'40';return a===b?'40':a>b?'A':'40'}
+  return['0','15','30','40'][Math.min(a,3)];
+}
+function status(){
+  if(S.win!==null)return`Ganan ${esc(S.win?S.b:S.a)} ${S.sets.map(s=>s.join('-')).join(' ')}`;
+  if(S.tb)return'Tie-break';
+  const[a,b]=S.p;
+  if(a>=3&&b>=3&&a===b){if(S.mode==='oro'||(S.mode==='star'&&S.dc>=3))return S.mode==='oro'?'Punto de oro':'Star Point';return'Iguales'}
+  for(const i of[0,1]){const o=1-i;
+    const gp=S.p[i]>=3&&S.p[i]>S.p[o];
+    if(gp){const sp=S.g[i]>=5&&S.g[i]>S.g[o];if(sp&&setsWon(i)===need()-1)return'Punto de partido';if(sp)return'Punto de set';if(S.srv!==i)return'Punto de break'}}
+  return'';
+}
+function rManual(){
+  const live=T.find(t=>st(t)==='live');
+  const cols=[...S.sets.map((s,k)=>({s,k,done:1})),...(S.win===null?[{s:S.g,k:S.sets.length,cur:1}]:[])];
+  const row=i=>`<div class="nm"><i class="srv ${S.srv===i&&S.win===null?'':'off'}" aria-label="${S.srv===i?'Saca':''}"></i><span>${esc(i?S.b:S.a)}</span></div>`+
+    cols.map(c=>`<div class="sc ${c.cur?'cur':c.s[i]>c.s[1-i]?'won':''}">${c.s[i]}</div>`).join('')+
+    `<div class="pt">${S.win===null?ptLabel(i):(S.win===i?'✓':'')}</div>`;
+  const mins=Math.max(0,Math.round((Date.now()-S.t0)/60000));
+  view.innerHTML=`<button class="btn ghost" data-sub="auto" style="margin-bottom:12px">← Volver a los partidos en directo</button>
+  <section class="board" aria-label="Marcador">
+    <div class="bt"><span>${esc(S.ev)}</span>${S.win===null?'<span class="live">EN JUEGO</span>':'<span>Final</span>'}</div>
+    <div class="grid" style="--n:${cols.length}">
+      <div></div>${cols.map(c=>`<div class="hd">Set ${c.k+1}</div>`).join('')}<div class="hd">${S.tb?'TB':'Punto'}</div>
+      ${row(0)}${row(1)}
+    </div>
+    <div class="msg" role="status">${status()}</div>
+    <div class="bt" style="margin:4px 0 0"><span>${{oro:'Punto de oro',star:'Star Point',ventaja:'Con ventaja'}[S.mode]} · al mejor de ${S.bo}</span><span>${mins} min</span></div>
+  </section>
+  <div class="pts">
+    <button class="pbtn" data-pt="0" ${S.win!==null?'disabled':''}>+ Punto<small>${esc(S.a)}</small></button>
+    <button class="pbtn" data-pt="1" ${S.win!==null?'disabled':''} style="background:var(--night)">+ Punto<small>${esc(S.b)}</small></button>
+  </div>
+  <div class="ctr">
+    <button class="btn ghost" id="undo" ${hist.length?'':'disabled'}>Deshacer</button>
+    <button class="btn ghost" id="swap">Cambiar saque</button>
+    <button class="btn ghost" id="reset">Reiniciar</button>
+  </div>
+  <details class="card" style="margin-top:14px"><summary>Configurar partido</summary>
+    <form id="cfg">
+      <div style="margin-bottom:10px"><label for="ev">Torneo / ronda</label><input id="ev" value="${esc(S.ev)}"></div>
+      <div class="two"><div><label for="pa">Pareja 1</label><input id="pa" value="${esc(S.a)}"></div><div><label for="pb">Pareja 2</label><input id="pb" value="${esc(S.b)}"></div></div>
+      <div class="two"><div><label for="md">Al llegar a 40-40</label><select id="md"><option value="star" ${S.mode==='star'?'selected':''}>Star Point (2026)</option><option value="oro" ${S.mode==='oro'?'selected':''}>Punto de oro</option><option value="ventaja" ${S.mode==='ventaja'?'selected':''}>Ventaja</option></select></div>
+      <div><label for="bo">Sets</label><select id="bo"><option value="3" ${S.bo==3?'selected':''}>Al mejor de 3</option><option value="5" ${S.bo==5?'selected':''}>Al mejor de 5</option></select></div></div>
+      <button class="btn ball" style="width:100%">Empezar partido nuevo</button>
+    </form>
+  </details>
+  ${live&&0?`<article class="card hero"><span class="live">Esta semana</span><h2>${live[0]} · ${live[2]}</h2><div class="meta"><span class="tag ${live[1]}">${live[1]}</span><span>${rng(live)}</span></div>
+  <p class="meta" style="margin:10px 0 0">Los resultados oficiales punto a punto están en <a href="https://www.padelfip.com/es/" style="color:var(--ball)">padelfip.com</a>. Aquí puedes llevar tú el marcador mientras lo ves.</p></article>`:''}
+  <p class="note">Marcador manual para tus propios partidos: suma cada punto tocando la pareja que lo gana.</p>`;
+}
+
+/* ---------- DIRECTO AUTOMÁTICO ---------- */
+const PK='bandeja-live-cfg';let CFG={id:'',demo:false};try{Object.assign(CFG,JSON.parse(localStorage.getItem(PK))||{})}catch(e){}
+const saveCfg=()=>{try{localStorage.setItem(PK,JSON.stringify(CFG))}catch(e){}};
+let sub='auto',LIVE=null,LERR='',LAT=0,PREV={},FLASH=new Set(),pollT=null,loading=false;
+const POLL=15000;
+async function poll(){
+  if(loading||document.hidden)return;loading=true;
+  try{
+    const q=CFG.demo?'demo=1':(CFG.id?'id='+encodeURIComponent(CFG.id):'');
+    const r=await fetch('/api/live'+(q?'?'+q:''),{cache:'no-store'});
+    if(!r.ok)throw new Error(r.status);
+    const d=await r.json();
+    FLASH=new Set();
+    for(const m of d.matches||[]){const k=m.teams.map(t=>t.point+'|'+t.sets.join(',')).join('/');if(PREV[m.id]&&PREV[m.id]!==k)FLASH.add(m.id);PREV[m.id]=k}
+    LIVE=d;LERR='';LAT=Date.now();
+  }catch(e){LERR=location.protocol==='file:'?'Abre la app desde tu web en Vercel para recibir el marcador en directo.':'No hay conexión con el servidor. Reintentando…'}
+  loading=false;if(tab==='directo'&&sub==='auto'&&!document.querySelector('#cfgLive details[open], input:focus'))render();
+}
+function startPoll(){clearInterval(pollT);poll();pollT=setInterval(poll,POLL)}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll()});
+const ago=()=>{if(!LAT)return'Conectando…';const s=Math.round((Date.now()-LAT)/1000);return s<5?'Actualizado ahora':`Actualizado hace ${s} s`};
+function liveBoard(m){
+  const n=Math.max(1,...m.teams.map(t=>t.sets.length));
+  const fl=FLASH.has(m.id);
+  const row=t=>`<div class="nm two-l"><i class="srv ${t.serving?'':'off'}"></i><span>${t.players.map(esc).join('<br>')}</span></div>`+
+    Array.from({length:n},(_,k)=>{const v=t.sets[k],o=m.teams.find(x=>x!==t).sets[k];const cur=m.status==='live'&&k===n-1;return`<div class="sc ${cur?'cur':v>o?'won':''}">${v??''}</div>`}).join('')+
+    `<div class="pt ${fl&&m.status==='live'?'flash':''}" ${m.status!=='live'?'style="background:#ffffff14;color:#fff"':''}>${m.status==='live'?esc(t.point||'0'):t.winner?'✓':''}</div>`;
+  return`<section class="board" style="margin-bottom:12px" aria-label="${esc(m.teams.map(t=>t.players.join(' y ')).join(' contra '))}">
+    <div class="bt"><span>${esc([m.round,m.court].filter(Boolean).join(' · ')||'Partido')}</span>${m.status==='live'?'<span class="live">EN JUEGO</span>':m.status==='finished'?'<span>Final</span>':'<span>Próximo</span>'}</div>
+    <div class="grid" style="--n:${n}">${row(m.teams[0])}${row(m.teams[1])}</div>
+    ${m.starPoint?'<div class="msg">Star Point</div>':''}</section>`;
+}
+function rDirecto(){
+  if(sub==='manual')return rManual();
+  const ms=(LIVE&&LIVE.matches)||[],L=ms.filter(m=>m.status==='live'),F=ms.filter(m=>m.status==='finished'),U=ms.filter(m=>m.status==='upcoming');
+  const cur=T.find(t=>st(t)==='live');
+  const head=`<div class="row-l"><span>${LIVE&&LIVE.source==='demo'?'<strong>Modo demostración</strong> · ':''}${LIVE&&LIVE.tournament&&LIVE.tournament.id&&LIVE.source!=='demo'?esc(LIVE.tournament.id)+' · ':''}${ago()}</span><button class="btn ghost sm" id="refresh">Actualizar</button></div>`;
+  let body='';
+  if(LERR)body=`<div class="card empty">${esc(LERR)}</div>`;
+  else if(!LIVE)body=`<div class="card empty">Cargando el marcador…</div>`;
+  else if(!ms.length)body=`<div class="card empty">${esc(LIVE.message||'Ahora mismo no hay partidos en juego.')}${LIVE.error==='no_tournament'?'':'<br>Se vuelve a comprobar cada 15 s.'}</div>`;
+  else body=(L.length?`<h2 class="sec" style="margin-top:4px">En juego</h2>`+L.map(liveBoard).join(''):'')+(U.length?`<h2 class="sec">Próximos</h2>`+U.map(liveBoard).join(''):'')+(F.length?`<h2 class="sec">Terminados</h2>`+F.map(liveBoard).join(''):'');
+  view.innerHTML=(cur?`<article class="card hero"><span class="live">Esta semana</span><h2>${cur[0]} · ${cur[2]}</h2><div class="meta"><span class="tag ${cur[1]}">${cur[1]}</span><span>${rng(cur)}</span></div></article>`:'')+head+body+
+  `<details class="card" id="cfgLive" style="margin-top:14px"><summary>Ajustes del directo</summary>
+    <form id="cfgL"><label for="tid">ID del torneo</label><input id="tid" placeholder="FIP-2026-1234" value="${esc(CFG.id)}" autocomplete="off">
+    <p class="meta" style="margin:6px 0 10px">Déjalo vacío para que la app intente encontrar el torneo en juego. El ID aparece en la pestaña Live Score de padelfip.com.</p>
+    <label style="display:flex;gap:10px;align-items:center;font-weight:500;margin-bottom:12px"><input type="checkbox" id="dm" ${CFG.demo?'checked':''} style="width:22px;min-height:22px"> Modo demostración (partidos simulados)</label>
+    <button class="btn ball" style="width:100%">Guardar</button></form></details>
+  <button class="btn ghost" data-sub="manual" style="width:100%">Marcador manual para tus partidos</button>
+  <p class="note">Datos del marcador oficial de la FIP; se actualizan solos cada 15 s.</p>`;
+}
+
+/* ---------- TORNEOS ---------- */
+function fin(r,lab){if(!r)return'';return`<div><em>${lab}</em><span><strong>${esc(r[0])}</strong>${r[1]?` d. ${esc(r[1])}`:''}${r[2]?` <span style="white-space:nowrap">· ${r[2]}</span>`:''}</span></div>`}
+function rTorneos(){
+  const F=[['todos','Todos'],['Major','Major'],['P1','P1'],['P2','P2'],['prox','Próximos']];
+  let L=T.filter(t=>tf==='todos'||(tf==='prox'?st(t)!=='fin':t[1]===tf));
+  const up=T.filter(t=>st(t)!=='fin');
+  view.innerHTML=`<div class="seg" role="group" aria-label="Filtrar torneos">${F.map(([k,t])=>`<button class="chip" data-tf="${k}" aria-pressed="${tf===k}">${t}</button>`).join('')}</div>`+
+  (tf==='todos'?`<h2 class="sec" style="margin-top:6px">Lo que queda</h2>`+up.map(card).join('')+`<h2 class="sec">Ya jugados</h2>`+[...T].filter(t=>st(t)==='fin').reverse().map(card).join(''):L.map(card).join('')||'<p class="note">Nada con este filtro.</p>')+
+  `<p class="note">Qatar Airways Premier Padel Tour 2026. El Qatar Major se aplazó y no figura. Algunos resultados de final no estaban publicados en las fuentes consultadas.</p>`;
+}
+function card(t){
+  const s=st(t),a=d(t[3]);
+  return`<article class="card tr ${s==='fin'?'past':''}"><div class="dt"><b>${a.getDate()}</b><small>${MES[a.getMonth()]}</small></div><div>
+  <div class="meta" style="gap:6px;align-items:center"><span class="tag ${t[1]}">${t[1]}</span>${s==='live'?'<span class="live">En juego</span>':s==='prox'?'<span>Próximo</span>':''}</div>
+  <h3 style="margin-top:6px">${t[0]}</h3><div class="meta"><span>${t[2]}</span><span>${rng(t)}</span></div>
+  ${t[5]?`<div class="fin">${fin(t[5],'Masc.')}${fin(t[6],'Fem.')}</div>`:s==='live'?`<button class="btn ball" style="margin-top:10px" data-go="${esc(t[0])}">Ver en directo</button>`:''}
+  </div></article>`;
+}
+
+/* ---------- TÍTULOS ---------- */
+function rTitulos(){
+  const idx=tg==='m'?5:6,c={};
+  T.forEach(t=>{if(t[idx])c[t[idx][0]]=(c[t[idx][0]]||0)+1});
+  const L=Object.entries(c).sort((a,b)=>b[1]-a[1]),max=L[0][1];
+  const played=T.filter(t=>t[5]).length;
+  view.innerHTML=`<div class="seg" role="group"><button class="chip" data-tg="m" aria-pressed="${tg==='m'}">Masculino</button><button class="chip" data-tg="f" aria-pressed="${tg==='f'}">Femenino</button></div>
+  <section class="card"><h2 style="font-size:26px">Títulos de la temporada 2026</h2><p class="meta" style="margin:2px 0 10px">${played} torneos disputados</p>
+  ${L.map(([n,v],i)=>`<div class="rk"><div class="n">${i+1}</div><div><strong>${esc(n)}</strong><div class="bar"><i style="width:${v/max*100}%"></i></div></div><div class="tt">${v}</div></div>`).join('')}</section>
+  ${tg==='m'?'<p class="note">Coello y Tapia ya tienen asegurado acabar 2026 como número 1 del ranking FIP por cuarta temporada seguida.</p>':'<p class="note">Brea y Triay llegan al tramo final líderes de la carrera femenina, con Sánchez y Ustero como principales perseguidoras.</p>'}
+  <p class="note">Recuento a partir de las finales publicadas hasta el Dubai P1. Ranking oficial en <a href="https://www.padelfip.com/es/">padelfip.com</a>.</p>`;
+}
+
+const TAB={directo:['En directo','Resultados que se actualizan solos',rDirecto],torneos:['Torneos','Calendario Premier Padel 2026',rTorneos],titulos:['Títulos','Quién está ganando la temporada',rTitulos]};
+function render(){const[a,b,f]=TAB[tab];document.getElementById('title').textContent=a;document.getElementById('sub').textContent=b;
+  document.querySelectorAll('nav button').forEach(x=>x.dataset.tab===tab?x.setAttribute('aria-current','page'):x.removeAttribute('aria-current'));f()}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b||b.disabled)return;
+  if(b.dataset.tab){tab=b.dataset.tab;render();scrollTo(0,0);return}
+  if(b.dataset.pt){point(+b.dataset.pt);return}
+  if(b.dataset.sub){sub=b.dataset.sub;render();scrollTo(0,0);return}
+  if(b.id==='refresh'){poll();return}
+  if(b.dataset.tf){tf=b.dataset.tf;render();return}
+  if(b.dataset.tg){tg=b.dataset.tg;render();return}
+  if(b.dataset.go){tab='directo';sub='auto';render();scrollTo(0,0);return}
+  if(b.id==='undo'&&hist.length){S=JSON.parse(hist.pop());save();render();return}
+  if(b.id==='swap'){S.srv=1-S.srv;save();render();return}
+  if(b.id==='reset'){hist.push(JSON.stringify(S));S=fresh(S);save();render();return}
+});
+document.addEventListener('submit',e=>{e.preventDefault();
+  if(e.target.id==='cfgL'){CFG.id=document.getElementById('tid').value.trim().toUpperCase();CFG.demo=document.getElementById('dm').checked;saveCfg();PREV={};LIVE=null;render();poll();return}
+  if(e.target.id!=='cfg')return;
+  const v=id=>document.getElementById(id).value.trim();
+  hist=[];S=fresh({a:v('pa')||'Pareja 1',b:v('pb')||'Pareja 2',ev:v('ev')||'Partido',mode:v('md'),bo:+v('bo')});save();render();scrollTo(0,0)});
+document.addEventListener('keydown',e=>{if(tab!=='directo'||sub!=='manual'||/INPUT|SELECT/.test(e.target.tagName))return;
+  if(e.key==='1'||e.key==='ArrowLeft')point(0);if(e.key==='2'||e.key==='ArrowRight')point(1);
+  if((e.ctrlKey||e.metaKey)&&e.key==='z'&&hist.length){S=JSON.parse(hist.pop());save();render()}});
+const tick=setInterval(()=>{if(tab==='directo'&&!document.querySelector('details[open]')&&!document.querySelector('input:focus'))render()},5000);
+render();startPoll();
+}
+</script>
+</body>
+</html>
