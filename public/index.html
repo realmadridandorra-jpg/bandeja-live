@@ -228,7 +228,7 @@ function rManual(){
 /* ---------- DIRECTO AUTOMÁTICO ---------- */
 const PK='bandeja-live-cfg';let CFG={id:'',demo:false};try{Object.assign(CFG,JSON.parse(localStorage.getItem(PK))||{})}catch(e){}
 const saveCfg=()=>{try{localStorage.setItem(PK,JSON.stringify(CFG))}catch(e){}};
-let sub='auto',LIVE=null,LERR='',LAT=0,PREV={},FLASH=new Set(),pollT=null,loading=false;
+let showAll=false,sub='auto',LIVE=null,LERR='',LAT=0,PREV={},FLASH=new Set(),pollT=null,loading=false;
 const POLL=15000;
 async function poll(){
   if(loading||document.hidden)return;loading=true;
@@ -246,6 +246,8 @@ async function poll(){
 function startPoll(){clearInterval(pollT);poll();pollT=setInterval(poll,POLL)}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)poll()});
 const ago=()=>{if(!LAT)return'Conectando…';const s=Math.round((Date.now()-LAT)/1000);return s<5?'Actualizado ahora':`Actualizado hace ${s} s`};
+const ES=[[/Women's Qualifying/i,'Previa femenina'],[/\bMen's Qualifying/i,'Previa masculina'],[/^Men\b/i,'Masculino'],[/^Women\b/i,'Femenino'],[/Round of 64/i,'Treintaidosavos'],[/Round of 32/i,'Dieciseisavos'],[/Round of 16/i,'Octavos'],[/Quarter.?finals?/i,'Cuartos'],[/Semi.?finals?/i,'Semifinal'],[/\bFinals?\b/i,'Final'],[/Starting at/i,'A las'],[/Not before/i,'No antes de las'],[/Followed by/i,'A continuación'],[/Cancha/i,'Pista']];
+const tr=x=>ES.reduce((a,[r,v])=>a.replace(r,v),x||'');
 function liveBoard(m){
   const n=Math.max(1,...m.teams.map(t=>t.sets.length));
   const fl=FLASH.has(m.id);
@@ -253,7 +255,7 @@ function liveBoard(m){
     Array.from({length:n},(_,k)=>{const v=t.sets[k],o=m.teams.find(x=>x!==t).sets[k];const cur=m.status==='live'&&k===n-1;return`<div class="sc ${cur?'cur':v>o?'won':''}">${v??''}</div>`}).join('')+
     `<div class="pt ${fl&&m.status==='live'?'flash':''}" ${m.status!=='live'?'style="background:#ffffff14;color:#fff"':''}>${m.status==='live'?esc(t.point||'0'):t.winner?'✓':''}</div>`;
   return`<section class="board" style="margin-bottom:12px" aria-label="${esc(m.teams.map(t=>t.players.join(' y ')).join(' contra '))}">
-    <div class="bt"><span>${esc([m.round,m.court].filter(Boolean).join(' · ')||'Partido')}</span>${m.status==='live'?'<span class="live">EN JUEGO</span>':m.status==='finished'?'<span>Final</span>':'<span>Próximo</span>'}</div>
+    <div class="bt"><span>${esc([tr(m.round),tr(m.court)].filter(Boolean).join(' · ')||'Partido')}${m.status==='upcoming'&&m.when?'<br>'+esc(tr(m.when)):''}${m.status==='finished'&&m.duration?' · '+esc(m.duration):''}</span>${m.status==='live'?'<span class="live">EN JUEGO</span>':m.status==='finished'?'<span>Final</span>':'<span>Próximo</span>'}</div>
     <div class="grid" style="--n:${n}">${row(m.teams[0])}${row(m.teams[1])}</div>
     ${m.starPoint?'<div class="msg">Star Point</div>':''}</section>`;
 }
@@ -261,20 +263,22 @@ function rDirecto(){
   if(sub==='manual')return rManual();
   const ms=(LIVE&&LIVE.matches)||[],L=ms.filter(m=>m.status==='live'),F=ms.filter(m=>m.status==='finished'),U=ms.filter(m=>m.status==='upcoming');
   const cur=T.find(t=>st(t)==='live');
-  const head=`<div class="row-l"><span>${LIVE&&LIVE.source==='demo'?'<strong>Modo demostración</strong> · ':''}${LIVE&&LIVE.tournament&&LIVE.tournament.id&&LIVE.source!=='demo'?esc(LIVE.tournament.id)+' · ':''}${ago()}</span><button class="btn ghost sm" id="refresh">Actualizar</button></div>`;
+  const head=`<div class="row-l"><span>${LIVE&&LIVE.source==='demo'?'<strong>Modo demostración</strong> · ':''}${LIVE&&LIVE.tournament&&LIVE.tournament.day?'Hoy, '+esc(LIVE.tournament.day.replace(/NOV/i,'nov'))+' · ':''}${ago()}</span><button class="btn ghost sm" id="refresh">Actualizar</button></div>`;
   let body='';
   if(LERR)body=`<div class="card empty">${esc(LERR)}</div>`;
   else if(!LIVE)body=`<div class="card empty">Cargando el marcador…</div>`;
   else if(!ms.length)body=`<div class="card empty">${esc(LIVE.message||'Ahora mismo no hay partidos en juego.')}${LIVE.error==='no_tournament'?'':'<br>Se vuelve a comprobar cada 15 s.'}</div>`;
-  else body=(L.length?`<h2 class="sec" style="margin-top:4px">En juego</h2>`+L.map(liveBoard).join(''):'')+(U.length?`<h2 class="sec">Próximos</h2>`+U.map(liveBoard).join(''):'')+(F.length?`<h2 class="sec">Terminados</h2>`+F.map(liveBoard).join(''):'');
+  else body=(L.length?`<h2 class="sec" style="margin-top:4px">En juego (${L.length})</h2>`+L.map(liveBoard).join(''):`<div class="card empty">Ahora mismo no hay ningún partido en juego. Esta pantalla se actualiza sola.</div>`)+
+    (U.length?`<h2 class="sec">Próximos (${U.length})</h2>`+(showAll?U:U.slice(0,6)).map(liveBoard).join('')+(U.length>6?`<button class="btn ghost" id="more" style="width:100%;margin-bottom:12px">${showAll?'Ver menos':'Ver los '+U.length+' partidos'}</button>`:''):'')+
+    (F.length?`<h2 class="sec">Terminados hoy (${F.length})</h2>`+[...F].reverse().slice(0,showAll?99:6).map(liveBoard).join(''):'');
   view.innerHTML=(cur?`<article class="card hero"><span class="live">Esta semana</span><h2>${cur[0]} · ${cur[2]}</h2><div class="meta"><span class="tag ${cur[1]}">${cur[1]}</span><span>${rng(cur)}</span></div></article>`:'')+head+body+
   `<details class="card" id="cfgLive" style="margin-top:14px"><summary>Ajustes del directo</summary>
     <form id="cfgL"><label for="tid">ID del torneo</label><input id="tid" placeholder="FIP-2026-1234" value="${esc(CFG.id)}" autocomplete="off">
-    <p class="meta" style="margin:6px 0 10px">Déjalo vacío para que la app intente encontrar el torneo en juego. El ID aparece en la pestaña Live Score de padelfip.com.</p>
+    <p class="meta" style="margin:6px 0 10px">Déjalo vacío para seguir el torneo de esta semana (Mexico Major). Para otro torneo, pon su código de padelfip.com, tipo FIP-2026-1234.</p>
     <label style="display:flex;gap:10px;align-items:center;font-weight:500;margin-bottom:12px"><input type="checkbox" id="dm" ${CFG.demo?'checked':''} style="width:22px;min-height:22px"> Modo demostración (partidos simulados)</label>
     <button class="btn ball" style="width:100%">Guardar</button></form></details>
   <button class="btn ghost" data-sub="manual" style="width:100%">Marcador manual para tus partidos</button>
-  <p class="note">Datos del marcador oficial de la FIP; se actualizan solos cada 15 s.</p>`;
+  <p class="note">Datos del marcador oficial de la FIP (padelfip.com). Se actualizan solos cada 15 s.</p>`;
 }
 
 /* ---------- TORNEOS ---------- */
@@ -319,6 +323,7 @@ document.addEventListener('click',e=>{
   if(b.dataset.pt){point(+b.dataset.pt);return}
   if(b.dataset.sub){sub=b.dataset.sub;render();scrollTo(0,0);return}
   if(b.id==='refresh'){poll();return}
+  if(b.id==='more'){showAll=!showAll;render();return}
   if(b.dataset.tf){tf=b.dataset.tf;render();return}
   if(b.dataset.tg){tg=b.dataset.tg;render();return}
   if(b.dataset.go){tab='directo';sub='auto';render();scrollTo(0,0);return}
