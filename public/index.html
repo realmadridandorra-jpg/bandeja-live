@@ -320,7 +320,7 @@ const shortPair=s=>String(s).split('/').map(p=>surname(p.trim())).map(titleName)
 function mergeResults(auto){
   for(const [slug,r] of Object.entries(auto||{})){
     const base=RES[slug]||{};const out={...base};
-    for(const g of['m','f']){const a=r[g];if(!a)continue;const b=base[g];if(a[3])learn(a[0].split('/').map(x=>x.trim()),a[3]);
+    for(const g of['m','f']){const a=r[g];if(!a)continue;const b=base[g];if(a[3]){const fu=a[0].split('/').map(x=>x.trim()),sh=shortPair(a[0]).split('/').map(x=>x.trim());learn(fu,a[3]);if(sh.length===fu.length)learn(sh,a[3])}
       if(!b||!b[0])out[g]=[shortPair(a[0]),shortPair(a[1]),a[2]];
       else if(pkey(b[0].split('/'))===pkey(a[0].split('/'))){out[g]=[b[0],b[1]||shortPair(a[1]),a[2]||b[2]]}}
     RES[slug]=out;}
