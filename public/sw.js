@@ -1,6 +1,6 @@
-// Service worker de Bandeja Pro: guarda la app para que abra al instante y funcione sin cobertura.
+// Service worker de Por3: guarda la app para que abra al instante y funcione sin cobertura.
 // Los datos (/api/...) siempre se piden a la red para que el marcador esté al día.
-const CACHE = 'bandeja-v2';
+const CACHE = 'por3-v3';
 const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

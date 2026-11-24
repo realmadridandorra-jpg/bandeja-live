@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Bandeja Pro · Pádel en directo</title>
+<title>Por3 · Pádel en directo</title>
 <meta name="description" content="Resultados en directo, cuadros y estadísticas del pádel profesional.">
 <meta name="theme-color" content="#0c1a46">
 <link rel="manifest" href="/manifest.webmanifest">
@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Bandeja">
+<meta name="apple-mobile-web-app-title" content="Por3">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
@@ -34,6 +34,7 @@ button,input,select{font:inherit;font-size:16px}button{cursor:pointer}
 .app{max-width:520px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative}
 @media(min-width:600px){.app{margin:24px auto;min-height:calc(100vh - 48px);border-radius:28px;overflow:hidden;box-shadow:0 20px 60px #0a1a3a40}}
 header{background:transparent;color:#fff;padding:calc(18px + env(safe-area-inset-top)) 18px 16px}
+.brand{font-weight:900;font-size:15px;letter-spacing:.06em;color:#fff;display:flex;align-items:baseline;gap:6px;margin-bottom:6px}.brand b{color:var(--ball);font-size:19px}.brand span{font-weight:600;font-size:11px;letter-spacing:.02em;color:var(--onm);text-transform:uppercase}
 header h1{font-size:34px}header p{margin:4px 0 0;color:var(--onm)}
 main{flex:1;padding:14px 14px calc(100px + env(safe-area-inset-bottom))}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
@@ -129,7 +130,7 @@ details summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;alig
 .duo{display:flex;height:6px;border-radius:6px;overflow:hidden;margin-top:4px;background:var(--line)}.duo i{background:var(--court)}.duo u{background:var(--ball);margin-left:auto}
 .toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#16243a;color:#fff;padding:10px 16px;border-radius:12px;opacity:0;transition:.25s;pointer-events:none;max-width:90vw;z-index:10;box-shadow:0 0 0 1px var(--ball)}
 .toast.on{opacity:1;transform:translate(-50%,0)}
-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:3}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);display:grid;grid-template-columns:repeat(5,1fr);background:var(--card);border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom));z-index:3}
 @media(min-width:600px){nav{position:absolute;left:0;transform:none;width:100%}}
 nav button{background:none;border:0;color:var(--mute);display:grid;justify-items:center;gap:2px;min-height:52px;font-size:13px}
 nav button[aria-current=page]{color:var(--court);font-weight:700}
@@ -146,7 +147,7 @@ nav svg{width:24px;height:24px}
 .chip[aria-pressed=true] small{color:#dbe5ff}
 .btn.ghost{color:#fff;border-color:#ffffff33}
 .card .btn.ghost,.sheet .btn.ghost{color:var(--ink);border-color:var(--line)}
-.hero{background:linear-gradient(90deg,rgba(3,8,19,.92) 0%,rgba(3,8,19,.6) 55%,rgba(3,8,19,.15) 100%),url(https://images.unsplash.com/photo-1673266893314-3ca4d9507743?w=1200&q=70&auto=format&fit=crop) 70% 72%/cover no-repeat,#030813;color:#fff;border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 24px #0007;min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;position:relative}
+.hero{background:linear-gradient(90deg,rgba(3,8,19,.92) 0%,rgba(3,8,19,.6) 55%,rgba(3,8,19,.15) 100%),url(https://images.unsplash.com/photo-1673266893314-3ca4d9507743?w=1200&q=70&auto=format&fit=crop) 80% 86%/270% auto no-repeat,#030813;color:#fff;border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 24px #0007;min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;position:relative}
 .hero::after{content:"Foto: P-squared Padel · Unsplash";position:absolute;right:10px;bottom:6px;font-size:9px;color:#fff;opacity:.45;pointer-events:none}.hero .meta{color:#dbe5ff}.hero .live{color:#fff}.hero .live::before{background:var(--ball)}
 .hero .tag.P1{background:#fff;color:var(--court)}
 .board,.card{box-shadow:0 8px 22px #0003}
@@ -173,6 +174,10 @@ select{background:#fff}
 .pl{display:flex;align-items:center;gap:7px;line-height:1.15}
 .nm>span.pls{display:grid;gap:4px}
 .av{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 10.5px/1 Barlow,sans-serif;color:#fff;letter-spacing:.02em;position:relative;box-shadow:0 0 0 2px #ffffff30}
+.rkl{padding:4px 10px}.rkr{display:grid;grid-template-columns:26px 30px auto 1fr auto 30px;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}.rkr:last-child{border:0}.rkr.fav{background:linear-gradient(90deg,#e6f04a22,transparent)}
+.rkr .pos{font-size:17px;text-align:center}.rkr .pos.top{color:var(--court)}.mv{font-style:normal;font-size:10px;font-weight:700;color:var(--mute);text-align:center}.mv.up{color:#16a34a}.mv.dn{color:#e11d48}
+.rkn{font-weight:700;font-size:14px;min-width:0}.rkn small{margin-left:6px;font-weight:500;color:var(--mute);font-size:11px}.rkb{display:block;height:4px;border-radius:4px;background:var(--line);margin-top:5px}.rkb i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--court),#7fb0ff)}
+.rkp{font-weight:800;font-size:14px;text-align:right}.rkp small{display:block;font-size:10px;font-weight:500;color:var(--mute)}
 .av.fl{background-size:cover;background-position:center;background-color:#fff}
 .pp{display:flex;align-items:center;gap:8px}
 .avs{display:flex;flex:none;gap:5px}.avs .av{width:26px;height:26px}
@@ -238,13 +243,14 @@ select{background:#fff}
 </head>
 <body>
 <div class="app">
-<header><h1 id="title">En directo</h1><p id="sub">Resultados que se actualizan solos</p></header>
+<header><div class="brand">POR<b>3</b><span>pádel en directo</span></div><h1 id="title">En directo</h1><p id="sub">Resultados que se actualizan solos</p></header>
 <main id="view"></main>
 <nav aria-label="Secciones">
 <button data-tab="directo" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="13" rx="2"/><path d="M8 21h8M9 10v3M15 10v3"/></svg>Directo</button>
 <button data-tab="cuadro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h5v4H3zM3 15h5v4H3zM8 7h3v10H8M11 12h4M15 10h6v4h-6z"/></svg>Cuadro</button>
 <button data-tab="torneos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Torneos</button>
 <button data-tab="titulos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8"/></svg>Títulos</button>
+<button data-tab="ranking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V13h4v8M10 21V7h4v14M16 21v-5h4v5"/></svg>Ranking</button>
 </nav>
 </div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Estadísticas del partido"><div id="sheetBody"></div></div>
@@ -331,9 +337,11 @@ const ISO={ESP:'ES',ARG:'AR',ITA:'IT',FRA:'FR',POR:'PT',BRA:'BR',MEX:'MX',NED:'N
 const flag=c=>{const i=ISO[c];return i?String.fromCodePoint(...[...i].map(x=>127397+x.charCodeAt(0))):''};
 const AVC=['#3b6cff','#7a4dff','#e0569b','#00a39a','#f08a24','#2b9be0','#9b5de5','#ef476f'];
 const ini=p=>{const t=String(p).replace(/\./g,' ').trim().split(/\s+/);return((t[0]||'')[0]+(surname(p)[0]||'')).toUpperCase()};
-const PFLAG={};const learn=(ps,fs)=>(ps||[]).forEach((p,i)=>{if(fs&&fs[i])PFLAG[norm(surname(p))]=fs[i]});
+const PFLAG={};const pk=p=>norm(p).replace(/\s+/g,' ').trim();
+const learn=(ps,fs)=>{if(!ps||!fs||fs.length!==ps.length)return;ps.forEach((p,i)=>{if(fs[i])PFLAG[pk(p)]=fs[i]})};
+const fla=(t,i)=>t.flags&&t.flags.length===t.players.length?t.flags[i]:'';
 const flagUrl=c=>ISO[c]?`https://flagcdn.com/w80/${ISO[c].toLowerCase()}.png`:'';
-const av=(p,c)=>{c=c||PFLAG[norm(surname(p))];if(c&&!PFLAG[norm(surname(p))])PFLAG[norm(surname(p))]=c;const u=flagUrl(c);
+const av=(p,c)=>{c=c||PFLAG[pk(p)];if(c&&!PFLAG[pk(p)])PFLAG[pk(p)]=c;const u=flagUrl(c);
   if(u)return`<i class="av fl" style="background-image:url(${u})" title="${esc(c)}" aria-hidden="true"></i>`;
   let h=0;for(const ch of norm(p))h=(h*31+ch.charCodeAt(0))>>>0;return`<i class="av" style="background:${AVC[h%AVC.length]}" aria-hidden="true">${esc(ini(p))}</i>`};
 const isFav=t=>t.players.some(p=>FAV.has(norm(surname(p))));
@@ -357,7 +365,7 @@ async function askNotify(){
 
 /* ---------- directo ---------- */
 async function poll(force){
-  if(loading||(document.hidden&&!force))return;loading=true;
+  if(loading||(document.hidden&&!force&&!PIN))return;loading=true;
   try{
     const q=new URLSearchParams();if(CFG.demo)q.set('demo','1');else{if(CFG.id)q.set('id',CFG.id);if(DAY)q.set('day',DAY)}
     const r=await fetch('/api/live'+(q.toString()?'?'+q:''),{cache:'no-store'});
@@ -375,7 +383,7 @@ async function poll(force){
       PST[m.id]=m.status;
     }
     for(const m of d.matches||[])for(const t of m.teams)learn(t.players,t.flags);
-    LIVE=d;LERR='';LAT=Date.now();
+    LIVE=d;LERR='';LAT=Date.now();pinTick();
   }catch(e){LERR=location.protocol==='file:'?'Abre la app desde tu web para recibir el marcador.':'Sin conexión con el servidor. Reintentando…'}
   loading=false;if(tab==='directo'&&sub==='auto'&&!document.querySelector('details[open]')&&!document.activeElement.matches('input,select'))render();
 }
@@ -385,7 +393,7 @@ const ago=()=>{if(!LAT)return'Conectando…';const s=Math.round((Date.now()-LAT)
 const scoreStr=m=>{const[a,b]=m.teams;return a.sets.map((s,i)=>`${s}-${b.sets[i]??''}`).join(' ')};
 function board(m){
   const n=Math.max(1,...m.teams.map(t=>t.sets.length));const fl=FLASH.has(m.id);
-  const row=(t,o)=>`<div class="nm ${t.winner?'w':''}"><i class="srv ${t.serving&&m.status==='live'?'':'off'}"></i><span class="pls">${t.players.map((p,i)=>`<span class="pl">${av(p,(t.flags||[])[i])}${esc(p)}</span>`).join('')}</span><button class="star ${isFav(t)?'on':''}" data-fav="${esc(t.players.join('|'))}" aria-label="${isFav(t)?'Quitar de favoritos':'Añadir a favoritos'}">${isFav(t)?'★':'☆'}</button></div>`+
+  const row=(t,o)=>`<div class="nm ${t.winner?'w':''}"><i class="srv ${t.serving&&m.status==='live'?'':'off'}"></i><span class="pls">${t.players.map((p,i)=>`<span class="pl">${av(p,fla(t,i))}${esc(p)}</span>`).join('')}</span><button class="star ${isFav(t)?'on':''}" data-fav="${esc(t.players.join('|'))}" aria-label="${isFav(t)?'Quitar de favoritos':'Añadir a favoritos'}">${isFav(t)?'★':'☆'}</button></div>`+
     Array.from({length:n},(_,k)=>{const v=t.sets[k],w=o.sets[k];const cur=m.status==='live'&&k===n-1;const tb=t.tb&&t.tb[k]!=null?`<sup>${t.tb[k]}</sup>`:'';return`<div class="sc ${cur?'cur':v>w?'won':''}">${v??''}${tb}</div>`}).join('')+
     (m.status==='live'?`<div class="pt ${fl?'flash':''}">${esc(t.point||'0')}</div>`:`<div class="pt dim">${t.winner?'✓':''}</div>`);
   const head=[tr(m.round),tr(m.court)].filter(Boolean).join(' · ')||'Partido';
@@ -405,7 +413,7 @@ function hora(w){
 }
 function upRow(m,showCourt){
   const[a,b]=m.teams,[pre,t]=hora(m.when);
-  const pair=x=>`<div class="upair"><span class="pp"><span class="avs">${x.players.map((p,i)=>av(p,(x.flags||[])[i])).join('')}</span><span>${x.players.map(esc).join(' / ')}${x.seed?` <small style="color:var(--mute);font-weight:400">(${esc(x.seed)})</small>`:''}</span></span><button class="star ${isFav(x)?'on':''}" data-fav="${esc(x.players.join('|'))}" aria-label="${isFav(x)?'Quitar de favoritos':'Añadir a favoritos'}">${isFav(x)?'★':'☆'}</button></div>`;
+  const pair=x=>`<div class="upair"><span class="pp"><span class="avs">${x.players.map((p,i)=>av(p,fla(x,i))).join('')}</span><span>${x.players.map(esc).join(' / ')}${x.seed?` <small style="color:var(--mute);font-weight:400">(${esc(x.seed)})</small>`:''}</span></span><button class="star ${isFav(x)?'on':''}" data-fav="${esc(x.players.join('|'))}" aria-label="${isFav(x)?'Quitar de favoritos':'Añadir a favoritos'}">${isFav(x)?'★':'☆'}</button></div>`;
   return`<div class="up ${matchFav(m)?'fav':''}" data-match="${esc(m.id)}" data-tid="${esc(m.tid||'')}" data-year="${esc(m.year||'')}" data-st="upcoming" tabindex="0">
     <div class="uh">${pre?`<small>${pre}</small>`:''}<b class="${/^\d/.test(t)?'':'txt'}">${esc(t)}</b></div>
     <div><div class="ur">${esc(tr(m.round))}${showCourt?' · '+esc(tr(m.court)):''}</div>${pair(a)}<div class="vs">contra</div>${pair(b)}</div></div>`;
@@ -481,6 +489,7 @@ function drawSheet(){
   const s=STATS,m=s.m;
   const names=m?m.teams.map(t=>t.players.map(esc).join(' / ')):['',''];
   let h=`<div class="row-l" style="margin:0 0 8px"><strong style="color:var(--ink)">${m?esc(tr(m.round)):'Estadísticas'}</strong><button class="btn ghost sm" id="closeSheet">Cerrar</button></div>
+  ${m?`<div class="seg" style="margin:0 0 6px">${m.status!=='finished'?`<button class="chip" id="pinM" aria-pressed="${PIN===m.id}">📌 ${PIN===m.id?'En tu pantalla de bloqueo':'Ver en pantalla de bloqueo'}</button>`:''}<button class="chip" id="shareM">↗ Compartir</button></div>`:''}
   <div class="sx" style="border:0"><span style="font-size:12px;color:var(--court);font-weight:700">●</span><span class="l" style="color:var(--ink);text-align:left">${names[0]}</span><span></span></div>
   <div class="sx" style="border:0;padding-top:0"><span style="font-size:12px;color:var(--ball);font-weight:700">●</span><span class="l" style="color:var(--ink);text-align:left">${names[1]}</span><span></span></div>`;
   if(s.loading)h+='<p class="empty">Cargando estadísticas…</p>';
@@ -492,7 +501,7 @@ function drawSheet(){
   }
   $('#sheetBody').innerHTML=h;
 }
-$('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet'||e.target.id==='closeSheet')$('#sheet').classList.remove('on');const p=e.target.closest('[data-pane]');if(p){SP=+p.dataset.pane;drawSheet()}});
+$('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet'||e.target.id==='closeSheet')$('#sheet').classList.remove('on');const p=e.target.closest('[data-pane]');if(p){SP=+p.dataset.pane;drawSheet()}if(e.target.closest('#pinM')&&STATS.m)pinMatch(STATS.m);if(e.target.closest('#shareM')&&STATS.m)shareMatch(STATS.m)});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#sheet').classList.remove('on')});
 
 /* ---------- cuadro ---------- */
@@ -570,7 +579,7 @@ function rTorneos(){
 }
 
 /* ---------- títulos ---------- */
-const avt=p=>{const c=PFLAG[norm(surname(p))];if(flagUrl(c))return av(p,c);let h=0;for(const ch of norm(p))h=(h*31+ch.charCodeAt(0))>>>0;return`<i class="av" style="background:${AVC[h%AVC.length]}" aria-hidden="true">${esc(norm(p).slice(0,2).toUpperCase())}</i>`};
+const avt=p=>{const c=PFLAG[pk(p)];if(flagUrl(c))return av(p,c);let h=0;for(const ch of norm(p))h=(h*31+ch.charCodeAt(0))>>>0;return`<i class="av" style="background:${AVC[h%AVC.length]}" aria-hidden="true">${esc(norm(p).slice(0,2).toUpperCase())}</i>`};
 function rTitulos(){
   const g=tg==='m'?'m':'f',c=new Map();
   for(const t of CAL){const r=RES[t.slug]&&RES[t.slug][g];if(!r||!r[0])continue;const k=pkey(r[0].split('/'));const e=c.get(k)||{name:r[0],n:0};e.n++;c.set(k,e)}
@@ -652,8 +661,44 @@ function mountMaps(){
   });
 }
 
+/* ---------- ranking ---------- */
+let RK={g:store.get('bandeja-rkg','male'),data:null,err:''};
+async function loadRanking(){try{const d=await (await fetch('/api/ranking')).json();if(d.error)RK.err=d.error;else RK.data=d}catch(e){RK.err='No se pudo cargar el ranking.'}if(tab==='ranking')render()}
+function rRanking(){
+  let h=`<div class="seg" role="group" aria-label="Categoría"><button class="chip" data-rkg="male" aria-pressed="${RK.g==='male'}">Masculino</button><button class="chip" data-rkg="female" aria-pressed="${RK.g==='female'}">Femenino</button></div>`;
+  if(!RK.data){h+=RK.err?`<div class="card empty">${esc(RK.err)}</div>`:'<div class="card empty">Cargando ranking…</div>';if(!RK.data&&!RK.err&&!RK.busy){RK.busy=1;loadRanking()}view.innerHTML=h;return}
+  const L=RK.data[RK.g]||[];const top=L[0]?L[0].points:1;
+  h+=`<p class="meta" style="margin:2px 2px 10px"><span>Top ${L.length}</span>${RK.data.date?`<span>Actualizado ${esc(RK.data.date)}</span>`:''}<span>Fuente: padelfip</span></p>`;
+  h+='<div class="card rkl">'+L.map(x=>{const fav=FAV.has(norm(surname(x.name)));
+    const mv=x.move>0?`<i class="mv up">▲${x.move}</i>`:x.move<0?`<i class="mv dn">▼${-x.move}</i>`:'<i class="mv">–</i>';
+    return`<div class="rkr ${fav?'fav':''}"><b class="pos ${x.pos<=3?'top':''}">${x.pos}</b>${mv}${av(x.name,x.country)}<span class="rkn">${esc(x.name)}<small>${esc(x.country)}</small><span class="rkb"><i style="width:${Math.max(4,x.points/top*100)}%"></i></span></span><span class="rkp">${x.points.toLocaleString('es-ES')}<small>pts</small></span><button class="star ${fav?'on':''}" data-fav="${esc(x.name)}" aria-label="${fav?'Quitar de favoritos':'Añadir a favoritos'}">${fav?'★':'☆'}</button></div>`}).join('')+'</div>';
+  view.innerHTML=h;
+}
+
+/* ---------- pantalla de bloqueo y compartir ---------- */
+let PIN=store.get('bandeja-pin',null),PINK='';
+const sname=t=>t.players.map(surname).join('/');
+function pinText(m){const[a,b]=m.teams;const sets=a.sets.map((s,i)=>`${s}-${b.sets[i]??''}`).join('  ')||'0-0';
+  const pt=m.status==='live'&&(a.point||b.point)?` · Juego ${a.point||0}-${b.point||0}`:'';
+  const srv=m.status==='live'?(a.serving?' (saca '+surname(a.players[0])+'…)':''):'';
+  return{title:`${sname(a)}  ${sets}  ${sname(b)}`,body:(m.status==='finished'?'Final':m.status==='live'?'En juego':'Próximo · '+tr(m.when||''))+pt+' · '+tr(m.court||'')}}
+async function showPin(m,final){if(!SWR||!SWR.showNotification||Notification.permission!=='granted')return;const x=pinText(m);
+  try{await SWR.showNotification((final?'🏁 ':'🎾 ')+x.title,{body:x.body,tag:'por3-pin',renotify:!!final,silent:!final,requireInteraction:!final,icon:'/icon-192.png',badge:'/icon-192.png',data:{url:'/'}})}catch(e){}}
+async function pinMatch(m){
+  if(!canNotify()){toast('Este móvil no permite avisos aquí. En iPhone, añade la app a la pantalla de inicio primero.');return}
+  if(PIN===m.id){PIN=null;store.set('bandeja-pin',null);try{(await SWR.getNotifications({tag:'por3-pin'})).forEach(n=>n.close())}catch(e){}toast('Quitado de la pantalla de bloqueo');drawSheet();return}
+  const p=Notification.permission==='granted'?'granted':await Notification.requestPermission();
+  if(p!=='granted'){toast('Necesito permiso de avisos para ponerlo en la pantalla de bloqueo');return}
+  PIN=m.id;PINK='';store.set('bandeja-pin',PIN);showPin(m);toast('📌 Partido en tu pantalla de bloqueo');drawSheet();
+}
+function pinTick(){if(!PIN||!LIVE)return;const m=(LIVE.matches||[]).find(x=>x.id===PIN);if(!m)return;
+  const k=m.status+m.teams.map(t=>t.point+'|'+t.sets.join(',')).join('/');if(k===PINK)return;PINK=k;
+  if(m.status==='finished'){showPin(m,true);PIN=null;store.set('bandeja-pin',null)}else showPin(m)}
+async function shareMatch(m){const x=pinText(m);const text=`${x.title}\n${x.body}\nSíguelo en directo en Por3:`;
+  try{if(navigator.share){await navigator.share({title:'Por3',text,url:location.origin});return}await navigator.clipboard.writeText(text+' '+location.origin);toast('Copiado, ya puedes pegarlo')}catch(e){}}
+
 /* ---------- navegación ---------- */
-const TAB={directo:['En directo','Resultados que se actualizan solos',rDirecto],cuadro:['Cuadro','Ronda a ronda, con estadísticas',rCuadro],torneos:['Torneos','Calendario Premier Padel 2026',rTorneos],titulos:['Títulos','Quién está ganando la temporada',rTitulos]};
+const TAB={directo:['En directo','Resultados que se actualizan solos',rDirecto],cuadro:['Cuadro','Ronda a ronda, con estadísticas',rCuadro],torneos:['Torneos','Calendario Premier Padel 2026',rTorneos],titulos:['Títulos','Quién está ganando la temporada',rTitulos],ranking:['Ranking FIP','Los mejores del mundo, al día',rRanking]};
 function render(){const[a,b,f]=TAB[tab];$('#title').textContent=a;$('#sub').textContent=b;
   document.querySelectorAll('nav button').forEach(x=>x.dataset.tab===tab?x.setAttribute('aria-current','page'):x.removeAttribute('aria-current'));f();mountMaps()}
 const go=t=>{tab=t;render();scrollTo(0,0)};
@@ -674,6 +719,7 @@ document.addEventListener('click',e=>{
   if(b.id==='more'){showAll=!showAll;render();return}
   if(b.dataset.tf){tf=b.dataset.tf;render();return}
   if(b.dataset.tt){TT=b.dataset.tt;render();scrollTo(0,0);return}
+  if(b.dataset.rkg){RK.g=b.dataset.rkg;store.set('bandeja-rkg',RK.g);render();return}
   if(b.dataset.tg){tg=b.dataset.tg;render();return}
   if(b.dataset.g){DRAW.g=b.dataset.g;DRAW.start=null;render();return}
   if(b.dataset.vm){VM=b.dataset.vm;store.set('bandeja-vm',VM);render();return}
