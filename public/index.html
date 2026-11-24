@@ -174,6 +174,38 @@ select{background:#fff}
 .pp{display:flex;align-items:center;gap:8px}
 .avs{display:flex;flex:none;gap:5px}.avs .av{width:26px;height:26px}
 .upair .pp>span:last-child{min-width:0}
+/* directo: una tarjeta por pista + siguiente partido en pequeño */
+.shead{display:flex;align-items:center;justify-content:space-between;gap:8px 10px;margin:18px 2px 8px;flex-wrap:wrap}.shead .sec{margin:0;color:#fff}
+.chip.sm{min-height:36px;padding:4px 12px;font-size:14px}
+.nx{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;margin:-4px 0 14px;padding:9px 12px;border-radius:14px;background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.2);font-size:13.5px;color:var(--on);cursor:pointer}
+.nx .nt{font-weight:700;color:#9fbaff;white-space:nowrap}
+.nx .np{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nx i{font-style:normal;color:var(--onm)}
+.nx .more{grid-column:1/-1;font-size:12px;color:var(--onm);margin-top:-4px}
+.fin-d summary{color:#fff;padding:0 2px}
+/* cuadro en esquema */
+.brw{overflow:auto;margin:0 -14px;padding:0 14px 10px;-webkit-overflow-scrolling:touch}
+.br{display:grid;min-width:max-content}
+.bh{font:700 16px "Barlow Condensed",sans-serif;color:#9fbaff;padding:0 12px 8px}
+.bs{position:relative;display:flex;align-items:center;padding:0 12px}
+.bs:not(.last)::after{content:"";position:absolute;right:0;top:50%;width:12px;border-top:2px solid rgba(255,255,255,.25)}
+.bs:not(.first)::before{content:"";position:absolute;left:0;top:25%;bottom:25%;border-left:2px solid rgba(255,255,255,.25)}
+.bm{position:relative;width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:5px 9px;cursor:pointer;color:#fff}
+.bs:not(.first) .bm::before{content:"";position:absolute;left:-13px;top:50%;width:12px;border-top:2px solid rgba(255,255,255,.25)}
+.bm.tbd{color:var(--onm);font-size:13px;text-align:center;padding:11px 6px;border-style:dashed;cursor:default}
+.bm.lv{border-color:var(--coral)}.bm.fav{border-color:var(--ball)}
+.bl{display:flex;justify-content:space-between;gap:8px;font-size:13px;line-height:1.4;white-space:nowrap}
+.bl span{overflow:hidden;text-overflow:ellipsis}.bl small{color:var(--onm);font-size:11px}
+.bl b{font-family:"Barlow Condensed";font-size:15px;letter-spacing:.08em;color:#c8d3f5;font-weight:700}
+.bl.w{font-weight:700}.bl.w b{color:var(--ball)}
+/* títulos más grandes */
+.rk.big{grid-template-columns:30px minmax(0,1fr) auto;gap:12px;padding:13px 0}
+.rk.big .n{font-size:26px}
+.rk.big strong{font-family:"Barlow Condensed";font-size:21px;line-height:1.1}
+.rk.big .tt{font-size:40px}
+.tp{display:flex;align-items:center;gap:12px}
+.tp .avs{gap:0}.tp .av{width:42px;height:42px;font-size:14px;box-shadow:0 0 0 3px #fff}.tp .avs .av+.av{margin-left:-10px}
+.rk.big:first-of-type .tt{color:var(--court)}
 @media(prefers-reduced-motion:reduce){.live::before,.pt.flash{animation:none}.toast{transition:none}}
 </style>
 </head>
@@ -265,7 +297,7 @@ const tStatus=t=>TODAY<t.start?'prox':TODAY>t.end?'fin':'live';
 let tab='directo',sub='auto',CFG=store.get('bandeja-live-cfg',{id:'',demo:false});
 let FAV=new Set(store.get('bandeja-fav',[]));const saveFav=()=>store.set('bandeja-fav',[...FAV]);
 let LIVE=null,LERR='',LAT=0,PREV={},PST={},FLASH=new Set(),loading=false,showAll=false,DAY=null;
-let DRAW={id:null,data:null,err:'',g:'MD'},tf='todos',tg='m';
+let DRAW={id:null,data:null,err:'',g:'MD',start:null},tf='todos',tg='m',VM=store.get('bandeja-vm','pista');
 const ISO={ESP:'ES',ARG:'AR',ITA:'IT',FRA:'FR',POR:'PT',BRA:'BR',MEX:'MX',NED:'NL',GBR:'GB',BEL:'BE',SWE:'SE',CHI:'CL',URU:'UY',PAR:'PY',GER:'DE',UAE:'AE',QAT:'QA',USA:'US',DEN:'DK',FIN:'FI',EGY:'EG',KUW:'KW',SUI:'CH',AUT:'AT',RSA:'ZA',JPN:'JP',POL:'PL',CZE:'CZ',AUS:'AU',IRL:'IE',NOR:'NO',ECU:'EC',VEN:'VE',COL:'CO',PER:'PE',LTU:'LT',EST:'EE',UKR:'UA',CAN:'CA',KSA:'SA',BUL:'BG',ROU:'RO',HUN:'HU',CRO:'HR',SLO:'SI',LAT:'LV',MAR:'MA',TUN:'TN',IND:'IN',CHN:'CN',KOR:'KR'};
 const flag=c=>{const i=ISO[c];return i?String.fromCodePoint(...[...i].map(x=>127397+x.charCodeAt(0))):''};
 const AVC=['#3b6cff','#7a4dff','#e0569b','#00a39a','#f08a24','#2b9be0','#9b5de5','#ef476f'];
@@ -337,13 +369,24 @@ function hora(w){
   if(t)return['',t];
   return['',tr(w)||'—'];
 }
-function upRow(m){
+function upRow(m,showCourt){
   const[a,b]=m.teams,[pre,t]=hora(m.when);
   const pair=x=>`<div class="upair"><span class="pp"><span class="avs">${x.players.map((p,i)=>av(p,(x.flags||[])[i])).join('')}</span><span>${x.players.map(esc).join(' / ')}${x.seed?` <small style="color:var(--mute);font-weight:400">(${esc(x.seed)})</small>`:''}</span></span><button class="star ${isFav(x)?'on':''}" data-fav="${esc(x.players.join('|'))}" aria-label="${isFav(x)?'Quitar de favoritos':'Añadir a favoritos'}">${isFav(x)?'★':'☆'}</button></div>`;
   return`<div class="up ${matchFav(m)?'fav':''}" data-match="${esc(m.id)}" data-tid="${esc(m.tid||'')}" data-year="${esc(m.year||'')}" data-st="upcoming" tabindex="0">
     <div class="uh">${pre?`<small>${pre}</small>`:''}<b class="${/^\d/.test(t)?'':'txt'}">${esc(t)}</b></div>
-    <div><div class="ur">${esc(tr(m.round))}</div>${pair(a)}<div class="vs">contra</div>${pair(b)}</div></div>`;
+    <div><div class="ur">${esc(tr(m.round))}${showCourt?' · '+esc(tr(m.court)):''}</div>${pair(a)}<div class="vs">contra</div>${pair(b)}</div></div>`;
 }
+const short=t=>t.players.map(p=>titleName(surname(p))).join('/')||'Por decidir';
+function nextLine(m,extra){const[pre,t]=hora(m.when);
+  return`<div class="nx" data-match="${esc(m.id)}" data-tid="${esc(m.tid||'')}" data-year="${esc(m.year||'')}" data-st="${m.status}"><span class="nt">${pre?pre+' '+esc(t):esc(t==='Después'?'Después':'Luego · '+t)}</span><span class="np">${esc(short(m.teams[0]))} <i>vs</i> ${esc(short(m.teams[1]))}</span>${extra?`<span class="more">y ${extra} partido${extra>1?'s':''} más en esta pista · toca «Todos seguidos» para verlos</span>`:''}</div>`}
+function courtsView(P){
+  const by=new Map();for(const m of P){const c=tr(m.court)||'Pista';if(!by.has(c))by.set(c,[]);by.get(c).push(m)}
+  return[...by.entries()].map(([c,ms])=>{const cur=ms.find(m=>m.status==='live')||ms[0];const i=ms.indexOf(cur),nx=ms[i+1];const rest=ms.length-i-2;
+    return`<div class="court">${esc(c)}</div>`+(cur.status==='live'?board(cur):`<section class="card list">${upRow(cur)}</section>`)+(nx?nextLine(nx,rest>0?rest:0):'')}).join('');
+}
+function mrow(m){const[a,b]=m.teams;const sa=a.sets.join(' '),sb=b.sets.join(' ');
+  return`<div class="mrow" data-match="${esc(m.id)}" data-tid="${esc(m.tid)}" data-year="${esc(m.year)}" data-st="${m.status}"><div class="p ${a.winner?'w':''}">${matchFav({teams:[a]})?'★ ':''}${esc(a.players.join(' / '))}${a.seed?` <small>(${esc(a.seed)})</small>`:''}</div><div class="s ${a.winner?'w':''}">${esc(sa)||(m.status==='live'?'<span class="live"></span>':'')}</div>
+  <div class="p ${b.winner?'w':''}">${matchFav({teams:[b]})?'★ ':''}${esc(b.players.join(' / '))}${b.seed?` <small>(${esc(b.seed)})</small>`:''}</div><div class="s ${b.winner?'w':''}">${esc(sb)}</div></div>`}
 function upList(U){
   const by=new Map();for(const m of U){const c=tr(m.court)||'Pista';if(!by.has(c))by.set(c,[]);by.get(c).push(m)}
   return[...by.entries()].map(([c,ms])=>`<div class="court">${esc(c)}</div><section class="card list">${ms.map(upRow).join('')}</section>`).join('');
@@ -362,10 +405,14 @@ function rDirecto(){
   else if(!LIVE)h+=`<div class="card empty">Cargando el marcador…</div>`;
   else if(!ms.length)h+=`<div class="card empty">${esc(LIVE.message||'No hay partidos.')}</div>`;
   else{
-    if(favs.length){const fu=favs.filter(m=>m.status==='upcoming');h+=`<h2 class="sec" style="margin-top:4px">Tus favoritos</h2>`+favs.filter(m=>m.status!=='upcoming').map(board).join('')+(fu.length?`<section class="card list">${fu.map(upRow).join('')}</section>`:'')}
-    h+=(L.length?`<h2 class="sec">En juego (${L.length})</h2>`+L.map(board).join(''):(DAY||!U.length?'':`<div class="card empty">Ahora mismo no hay ningún partido en juego. Esta pantalla se actualiza sola.</div>`));
-    if(U.length)h+=`<h2 class="sec">Próximos (${U.length})</h2><p class="meta" style="margin:-4px 2px 4px">Por pista y en orden de juego · hora local de la sede</p>`+upList(U);
-    if(F.length)h+=`<h2 class="sec">Terminados (${F.length})</h2>`+[...F].reverse().slice(0,showAll?99:6).map(board).join('')+(F.length>6&&!showAll?`<button class="btn ghost" id="more" style="width:100%;margin-bottom:12px">Ver los ${F.length} resultados</button>`:'');
+    if(favs.length){const fu=favs.filter(m=>m.status==='upcoming');h+=`<h2 class="sec" style="margin-top:4px">Tus favoritos</h2>`+favs.filter(m=>m.status!=='upcoming').map(board).join('')+(fu.length?`<section class="card list">${fu.map(m=>upRow(m,true)).join('')}</section>`:'')}
+    const pend=ms.filter(m=>m.status!=='finished');
+    const seg=`<div class="seg" role="group" aria-label="Cómo ver los partidos" style="margin:0;padding:0"><button class="chip sm" data-vm="pista" aria-pressed="${VM==='pista'}">Por pista</button><button class="chip sm" data-vm="todos" aria-pressed="${VM==='todos'}">Todos seguidos</button></div>`;
+    h+=`<div class="shead"><h2 class="sec">${VM==='pista'?'Por pista':'Todos los partidos'} (${pend.length})</h2>${seg}</div>`;
+    if(!pend.length)h+=`<div class="card empty">${DAY?'No quedan partidos por jugar este día.':'Hoy ya no quedan partidos por jugar.'}</div>`;
+    else if(VM==='pista')h+=courtsView(pend);
+    else h+=L.map(board).join('')+(U.length?`<section class="card list">${U.map(m=>upRow(m,true)).join('')}</section>`:'');
+    if(F.length)h+=`<details class="card glass fin-d"><summary>Terminados (${F.length})</summary>${[...F].reverse().map(mrow).join('')}</details>`;
     h+=`<p class="note">Toca un partido para ver sus estadísticas. Toca ☆ para seguir a una pareja.</p>`;
   }
   const nOn=store.get('bandeja-notify',false)&&canNotify()&&Notification.permission==='granted';
@@ -416,9 +463,27 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#sheet').classLis
 
 /* ---------- cuadro ---------- */
 async function loadDraw(id){
-  DRAW={...DRAW,id,data:null,err:''};render();
+  DRAW={...DRAW,id,data:null,err:'',start:null};render();
   try{const r=await fetch('/api/draw?id='+encodeURIComponent(id));const d=await r.json();if(d.error)DRAW.err=d.error;DRAW.data=d}catch(e){DRAW.err='No se pudo cargar el cuadro.'}
   if(tab==='cuadro')render();
+}
+const DEF_R=['Final','Semifinal','Cuartos','Octavos','Dieciseisavos','Treintaidosavos','Ronda de 128'];
+function bcard(m){const[a,b]=m.teams;
+  const line=t=>`<div class="bl ${t.winner?'w':''}"><span>${t.seed?`<small>${esc(t.seed)}</small> `:''}${esc(short(t))}</span><b>${t.sets.join(' ')}</b></div>`;
+  return`<div class="bm ${m.status==='live'?'lv':''} ${matchFav(m)?'fav':''}" data-match="${esc(m.id)}" data-tid="${esc(m.tid)}" data-year="${esc(m.year)}" data-st="${m.status}">${line(a)}${line(b)}</div>`}
+function bracket(rounds){
+  const byD=new Map();let D=0;
+  for(const r of rounds)for(const m of r.matches){const n=parseInt(String(m.id).replace(/\D/g,''),10);if(!n)continue;const d=Math.floor(Math.log2(n));D=Math.max(D,d);if(!byD.has(d))byD.set(d,{name:r.name,m:new Map()});byD.get(d).m.set(n-2**d,m)}
+  const start=Math.min(DRAW.start??Math.min(D,3),D);
+  const opts=[];for(let d=D;d>=1;d--)opts.push(d);
+  let h=opts.length>1?`<div class="seg" role="group" aria-label="Desde qué ronda">${opts.map(d=>`<button class="chip sm" data-bstart="${d}" aria-pressed="${d===start}">${d===D&&D>3?'Completo':'Desde '+DEF_R[d].toLowerCase()}</button>`).join('')}</div>`:'';
+  const cols=[];for(let d=start;d>=0;d--)cols.push(d);
+  h+=`<div class="brw"><div class="br" style="grid-template-columns:repeat(${cols.length},176px);grid-template-rows:auto repeat(${2**start},58px)">`;
+  cols.forEach((d,ci)=>{const R=byD.get(d);const span=2**(start-d);
+    h+=`<div class="bh" style="grid-column:${ci+1};grid-row:1">${esc(R?tr(R.name):DEF_R[d])}</div>`;
+    for(let k=0;k<2**d;k++){const m=R&&R.m.get(k);
+      h+=`<div class="bs ${ci===0?'first':''} ${d===0?'last':''}" style="grid-column:${ci+1};grid-row:${2+k*span}/span ${span}">${m?bcard(m):'<div class="bm tbd">Por decidir</div>'}</div>`}});
+  return h+'</div></div>';
 }
 function rCuadro(){
   const avail=CAL.filter(t=>t.start<=TODAY);
@@ -431,10 +496,7 @@ function rCuadro(){
   else{
     const rounds=DRAW.data.draw[DRAW.g]||[];
     if(!rounds.length)h+='<div class="card empty">El cuadro principal aún no ha empezado.</div>';
-    h+=rounds.map(r=>`<h2 class="sec">${esc(tr(r.name))}</h2><section class="card glass" style="padding:4px 14px">${r.matches.map(m=>{const[a,b]=m.teams;const sa=a.sets.join(' '),sb=b.sets.join(' ');
-      return`<div class="mrow" data-match="${esc(m.id)}" data-tid="${esc(m.tid)}" data-year="${esc(m.year)}" data-st="${m.status}"><div class="p ${a.winner?'w':''}">${matchFav({teams:[a]})?'★ ':''}${esc(a.players.join(' / '))}${a.seed?` <small style="color:var(--mute)">(${esc(a.seed)})</small>`:''}</div><div class="s ${a.winner?'w':''}">${esc(sa)||(m.status==='live'?'<span class="live"></span>':'')}</div>
-      <div class="p ${b.winner?'w':''}">${matchFav({teams:[b]})?'★ ':''}${esc(b.players.join(' / '))}${b.seed?` <small style="color:var(--mute)">(${esc(b.seed)})</small>`:''}</div><div class="s ${b.winner?'w':''}">${esc(sb)}</div></div>`}).join('')}</section>`).join('');
-    h+=`<p class="note">Cuadro principal de ${esc(t.name)}, ronda a ronda. Toca un partido para ver sus estadísticas.</p>`;
+    else h+=bracket(rounds)+`<p class="note">Cuadro principal de ${esc(t.name)}. Desliza hacia los lados para avanzar de ronda y toca un partido para ver sus estadísticas.</p>`;
   }
   view.innerHTML=h;
 }
@@ -460,6 +522,7 @@ function rTorneos(){
 }
 
 /* ---------- títulos ---------- */
+const avt=p=>{let h=0;for(const ch of norm(p))h=(h*31+ch.charCodeAt(0))>>>0;return`<i class="av" style="background:${AVC[h%AVC.length]}" aria-hidden="true">${esc(norm(p).slice(0,2).toUpperCase())}</i>`};
 function rTitulos(){
   const g=tg==='m'?'m':'f',c=new Map();
   for(const t of CAL){const r=RES[t.slug]&&RES[t.slug][g];if(!r||!r[0])continue;const k=pkey(r[0].split('/'));const e=c.get(k)||{name:r[0],n:0};e.n++;c.set(k,e)}
@@ -467,7 +530,7 @@ function rTitulos(){
   const played=CAL.filter(t=>RES[t.slug]&&RES[t.slug][g]&&RES[t.slug][g][0]).length;
   view.innerHTML=`<div class="seg"><button class="chip" data-tg="m" aria-pressed="${tg==='m'}">Masculino</button><button class="chip" data-tg="f" aria-pressed="${tg==='f'}">Femenino</button></div>
   <section class="card"><h2 style="font-size:26px">Títulos de la temporada 2026</h2><p class="meta" style="margin:2px 0 10px">${played} torneos terminados</p>
-  ${L.map((e,i)=>`<div class="rk"><div class="n">${i+1}</div><div><strong>${matchFav({teams:[{players:e.name.split('/')}]})?'★ ':''}${esc(e.name)}</strong><div class="bar"><i style="width:${e.n/max*100}%"></i></div></div><div class="tt">${e.n}</div></div>`).join('')}</section>
+  ${L.map((e,i)=>`<div class="rk big"><div class="n">${i+1}</div><div class="tp"><span class="avs">${e.name.split('/').map(p=>avt(p.trim())).join('')}</span><div style="flex:1;min-width:0"><strong>${matchFav({teams:[{players:e.name.split('/')}]})?'★ ':''}${esc(e.name)}</strong><div class="bar"><i style="width:${e.n/max*100}%"></i></div></div></div><div class="tt">${e.n}</div></div>`).join('')}</section>
   <p class="note">Se actualiza solo con cada final del marcador oficial. Ranking oficial en <a href="https://www.padelfip.com/es/">padelfip.com</a>.</p>`;
 }
 
@@ -537,7 +600,9 @@ document.addEventListener('click',e=>{
   if(b.id==='more'){showAll=!showAll;render();return}
   if(b.dataset.tf){tf=b.dataset.tf;render();return}
   if(b.dataset.tg){tg=b.dataset.tg;render();return}
-  if(b.dataset.g){DRAW.g=b.dataset.g;render();return}
+  if(b.dataset.g){DRAW.g=b.dataset.g;DRAW.start=null;render();return}
+  if(b.dataset.vm){VM=b.dataset.vm;store.set('bandeja-vm',VM);render();return}
+  if(b.dataset.bstart){DRAW.start=+b.dataset.bstart;render();return}
   if(b.dataset.golive){sub='auto';DAY=null;go('directo');startPoll();return}
   if(b.dataset.godraw){tab='cuadro';loadDraw(b.dataset.godraw);scrollTo(0,0);return}
   if(b.id==='undo'&&hist.length){S=JSON.parse(hist.pop());save();render();return}
