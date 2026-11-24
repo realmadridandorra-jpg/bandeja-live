@@ -10,7 +10,7 @@ function finalOf(matches, ev) {
   if (w < 0) return null;
   const W = m.teams[w], L = m.teams[1 - w];
   const score = W.sets.map((s, i) => `${s}-${L.sets[i] ?? ''}${W.tb[i] != null ? `(${W.tb[i]})` : L.tb[i] != null ? `(${L.tb[i]})` : ''}`).join(' ');
-  return [W.players.join(' / '), L.players.join(' / '), score];
+  return [W.players.join(' / '), L.players.join(' / '), score, W.flags || []];
 }
 
 export default async function handler(req, res) {
