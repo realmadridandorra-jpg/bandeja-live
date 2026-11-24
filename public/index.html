@@ -147,10 +147,9 @@ nav svg{width:24px;height:24px}
 .chip[aria-pressed=true] small{color:#dbe5ff}
 .btn.ghost{color:#fff;border-color:#ffffff33}
 .card .btn.ghost,.sheet .btn.ghost{color:var(--ink);border-color:var(--line)}
-.hero{background:radial-gradient(120% 140% at 80% 50%,#0b1a3f 0%,#000 60%);color:#fff;border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 24px #0007;min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;isolation:isolate}
-.hero::before{content:"";position:absolute;right:62px;top:50%;width:104px;height:204px;margin-top:-102px;transform:rotate(90deg);background:url(https://images.unsplash.com/photo-1673266893352-6de89e258064?w=2000&q=75&auto=format) 52.7% 47.7%/800% auto no-repeat;border-radius:3px;box-shadow:0 0 0 1px #ffffff22,0 0 50px 8px #1f5cff55;z-index:-1}
+.hero{background:linear-gradient(180deg,rgba(0,0,0,.72) 0%,rgba(0,0,0,.15) 45%,rgba(0,0,0,.7) 100%),linear-gradient(90deg,rgba(0,0,0,.75) 0%,rgba(0,0,0,.1) 65%),url(https://images.unsplash.com/photo-1658491830143-72808ca237e3?w=1200&q=75&auto=format) center 62%/cover no-repeat,#000;color:#fff;border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 24px #0007;min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;isolation:isolate}
 .hero>*{text-shadow:0 1px 8px #000c}
-.hero::after{content:"Foto: P-squared Padel · Unsplash";position:absolute;right:10px;bottom:6px;font-size:9px;color:#fff;opacity:.45;pointer-events:none}.hero .meta{color:#dbe5ff}.hero .live{color:#fff}.hero .live::before{background:var(--ball)}
+.hero::after{content:"Foto: Calle Hagberg · Unsplash";position:absolute;right:10px;bottom:6px;font-size:9px;color:#fff;opacity:.45;pointer-events:none}.hero .meta{color:#dbe5ff}.hero .live{color:#fff}.hero .live::before{background:var(--ball)}
 .hero .tag.P1{background:#fff;color:var(--court)}
 .board,.card{box-shadow:0 8px 22px #0003}
 nav{background:var(--night);border-top-color:#ffffff14}
@@ -176,12 +175,12 @@ select{background:#fff}
 .pl{display:flex;align-items:center;gap:7px;line-height:1.15}
 .nm>span.pls{display:grid;gap:4px}
 .av{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 10.5px/1 Barlow,sans-serif;color:#fff;letter-spacing:.02em;position:relative;box-shadow:0 0 0 2px #ffffff30}
-.rkw{padding:0;overflow:hidden;background:#fff}.rkw iframe{display:block;width:100%;height:calc(100vh - 250px);min-height:520px;border:0}
+.podw{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:end;gap:8px;padding:16px 10px 12px;color:#fff}.pod{display:grid;justify-items:center;gap:4px;text-align:center;position:relative}.pod .av{width:44px;height:44px;border:2px solid #fff}.pod b{font-size:13px;line-height:1.1}.pod small{font-size:11px;color:var(--onm)}.pod i{font-style:normal;font-weight:900;font-size:20px;width:100%;border-radius:10px 10px 0 0;padding:8px 0;background:#ffffff1a;color:var(--ball)}.pod.p1 i{padding:18px 0;background:linear-gradient(#e6f04a55,#e6f04a14)}.pod.p1 .av{width:56px;height:56px;border-color:var(--ball)}.pod.p3 i{padding:4px 0}
 .rkl{padding:4px 10px}.rkr{display:grid;grid-template-columns:26px 30px auto 1fr auto 30px;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line)}.rkr:last-child{border:0}.rkr.fav{background:linear-gradient(90deg,#e6f04a22,transparent)}
 .rkr .pos{font-size:17px;text-align:center}.rkr .pos.top{color:var(--court)}.mv{font-style:normal;font-size:10px;font-weight:700;color:var(--mute);text-align:center}.mv.up{color:#16a34a}.mv.dn{color:#e11d48}
 .rkn{font-weight:700;font-size:14px;min-width:0}.rkn small{margin-left:6px;font-weight:500;color:var(--mute);font-size:11px}.rkb{display:block;height:4px;border-radius:4px;background:var(--line);margin-top:5px}.rkb i{display:block;height:100%;border-radius:4px;background:linear-gradient(90deg,var(--court),#7fb0ff)}
 .rkp{font-weight:800;font-size:14px;text-align:right}.rkp small{display:block;font-size:10px;font-weight:500;color:var(--mute)}
-.fbg{position:relative;isolation:isolate;overflow:hidden}.fbg::before{content:"";position:absolute;inset:-30px;background:var(--flg) center/cover no-repeat;filter:blur(18px) saturate(1.3);opacity:.32;z-index:-1;pointer-events:none}
+.fbg{position:relative;isolation:isolate;overflow:hidden}.fbg::before{content:"";position:absolute;inset:-8px;background:var(--flg) center/cover no-repeat;filter:blur(3px) saturate(1.2);opacity:.5;z-index:-1;pointer-events:none}
 .pr.fbg{margin:0 -14px;padding-left:14px;padding-right:14px}
 .av.fl{background-size:cover;background-position:center;background-color:#fff}
 .pp{display:flex;align-items:center;gap:8px}
@@ -670,13 +669,16 @@ function mountMaps(){
 /* ---------- ranking ---------- */
 let RK={g:store.get('bandeja-rkg','male'),data:null,err:''};
 async function loadRanking(){try{const d=await (await fetch('/api/ranking')).json();if(d.error)RK.err=d.error;else RK.data=d}catch(e){RK.err='No se pudo cargar el ranking.'}if(tab==='ranking')render()}
+const RKD={"date":"23/11/2026","male":[[1,"Arturo Coello","ESP",20211,0],[1,"Agustin Tapia","ARG",20211,0],[3,"Alejandro Galan","ESP",14033,0],[3,"Federico Chingotto","ARG",14033,0],[5,"Juan Lebron","ESP",8560,0],[6,"Leandro Augsburger","ARG",8483,0],[7,"Franco Stupaczuk","ARG",6180,0],[8,"Jon Sanz","ESP",5243,1],[9,"Francisco Navarro","ESP",5241,-1],[10,"Martin Di Nenno","ARG",4813,0],[11,"Miguel Yanguas","ESP",4796,0],[12,"Francisco Guerrero","ESP",4391,0],[13,"Jeronimo Gonzalez","ESP",3813,0],[14,"Juan Tello","ARG",3803,0],[15,"Jorge Nieto","ESP",3691,0],[16,"Maximiliano Arce Simo","ARG",3600,1],[17,"Gonzalo Alfonso","ARG",3598,-1],[18,"Javier Leal","ESP",3488,0],[19,"Valentino Gabriel Libaak","ARG",3358,1],[20,"Lucas Campagnolo","BRA",3346,-1],[21,"Eduardo Alonso","ESP",3328,0],[22,"Lucas Bergamini","BRA",3101,1],[23,"Aimar Goñi Lacabe","ESP",2920,1],[24,"Jairo Bautista","ESP",2891,-2],[25,"Javier Garrido","ESP",2683,0],[26,"Javier Garcia","ESP",2448,0],[27,"Juanlu Esbri","ESP",2380,0],[28,"Inigo Jofre","UAE",2368,0],[29,"Carlos Daniel Gutierrez","ARG",2253,0],[30,"Jose Jimenez Casas","ESP",2158,0]],"female":[[1,"Gemma Triay Pons","ESP",15831,0],[1,"Delfina Brea Senesi","ARG",15831,0],[3,"Beatriz Gonzalez Fernandez","ESP",13926,0],[4,"Ariana Sanchez Fallada","ESP",12333,0],[5,"Claudia Fernandez Sanchez","ESP",12306,0],[6,"Andrea Ustero Prieto","ESP",12096,0],[7,"Paula Josemaria Martin","ESP",11223,0],[8,"Martina Calvo Santamaria","ESP",8636,0],[9,"Claudia Jensen","ARG",5548,1],[10,"Sofia Araujo","POR",5423,-1],[11,"Marta Ortega Gallego","ESP",4693,0],[12,"Tamara Icardo Alcorisa","ESP",4618,0],[13,"Alejandra Alonso De Villa","ESP",3966,0],[14,"Marina Guinart España","ESP",3936,0],[15,"Veronica Virseda","ESP",3296,0],[16,"Aranzazu Osoro Ulrich","ARG",3273,1],[17,"Alejandra Salazar Bengoechea","ESP",3266,-1],[18,"Beatriz Caldera Sanchez","ESP",3233,0],[19,"Carmen Goenaga Garcia","ESP",3083,0],[20,"Raquel Eugenio Barrera","ESP",2918,0],[21,"Nuria Rodriguez","ESP",2836,1],[22,"Giulia Dal Pozzo","ITA",2820,1],[23,"Victoria Iglesias Segador","ESP",2696,-2],[24,"Lorena Rufo Ortiz","ESP",2583,1],[25,"Martina Fassio Goyeneche","ARG",2498,-1],[26,"Jimena Velasco Postiguillo","ESP",2383,1],[27,"Patricia Llaguno Zielinski","ESP",2368,-1],[28,"Jessica Castello Lopez","ESP",2213,3],[29,"Lucia Sainz Pelegri","ESP",2188,-1],[30,"Marta Barrera De La Fuente","ESP",2146,-1]]};
 function rRanking(){
-  const u=`https://www.padelfip.com/es/fip-rankings/?gender=${RK.g==='female'?'Female':'Male'}`;
-  const cur=document.getElementById('rkf');
-  if(cur&&cur.dataset.u===u)return;
+  const L=RKD[RK.g]||[],top=L[0]?L[0][3]:1;
+  const podium=[[L[1],2],[L[0],1],[L[2],3]].filter(z=>z[0]).map(([x,k])=>`<div class="pod p${k}">${av(x[1],x[2])}<b>${esc(x[1].split(' ').slice(0,2).join(' '))}</b><small>${x[3].toLocaleString('es-ES')} pts</small><i>${x[0]}</i></div>`).join('');
   view.innerHTML=`<div class="seg" role="group" aria-label="Categoría"><button class="chip" data-rkg="male" aria-pressed="${RK.g==='male'}">Masculino</button><button class="chip" data-rkg="female" aria-pressed="${RK.g==='female'}">Femenino</button></div>
-  <section class="card rkw"><iframe id="rkf" data-u="${u}" src="${u}" title="Ranking FIP oficial" loading="lazy" referrerpolicy="no-referrer"></iframe></section>
-  <p class="note">Ranking oficial de la FIP, tal cual lo publica padelfip.com. <a href="${u}" target="_blank" rel="noopener">Abrir en padelfip ↗</a></p>`;
+  <section class="card glass podw">${podium}</section>
+  <section class="card rkl">${L.map(x=>{const[pos,name,c,pts,mvv]=x;const fav=FAV.has(norm(surname(name)));
+    const mv=mvv>0?`<i class="mv up">▲${mvv}</i>`:mvv<0?`<i class="mv dn">▼${-mvv}</i>`:'<i class="mv">–</i>';
+    return`<div class="rkr ${fav?'fav':''}"><b class="pos ${pos<=3?'top':''}">${pos}</b>${mv}${av(name,c)}<span class="rkn">${esc(name)}<small>${esc(c)}</small><span class="rkb"><i style="width:${Math.max(4,pts/top*100)}%"></i></span></span><span class="rkp">${pts.toLocaleString('es-ES')}<small>pts</small></span><button class="star ${fav?'on':''}" data-fav="${esc(name)}" aria-label="${fav?'Quitar de favoritos':'Añadir a favoritos'}">${fav?'★':'☆'}</button></div>`}).join('')}</section>
+  <p class="note">Top 30 del ranking FIP del ${RKD.date}. Toca ☆ para seguir a un jugador.</p>`;
 }
 
 /* ---------- pantalla de bloqueo y compartir ---------- */
@@ -702,7 +704,7 @@ async function shareMatch(m){const x=pinText(m);const text=`${x.title}\n${x.body
   try{if(navigator.share){await navigator.share({title:'Por3',text,url:location.origin});return}await navigator.clipboard.writeText(text+' '+location.origin);toast('Copiado, ya puedes pegarlo')}catch(e){}}
 
 /* ---------- navegación ---------- */
-const TAB={directo:['En directo','Resultados que se actualizan solos',rDirecto],cuadro:['Cuadro','Ronda a ronda, con estadísticas',rCuadro],torneos:['Torneos','Calendario Premier Padel 2026',rTorneos],titulos:['Títulos','Quién está ganando la temporada',rTitulos],ranking:['Ranking FIP','El ranking oficial, siempre al día',rRanking]};
+const TAB={directo:['En directo','Resultados que se actualizan solos',rDirecto],cuadro:['Cuadro','Ronda a ronda, con estadísticas',rCuadro],torneos:['Torneos','Calendario Premier Padel 2026',rTorneos],titulos:['Títulos','Quién está ganando la temporada',rTitulos],ranking:['Ranking FIP','Los 30 mejores del mundo',rRanking]};
 function render(){const[a,b,f]=TAB[tab];$('#title').textContent=a;$('#sub').textContent=b;
   document.querySelectorAll('nav button').forEach(x=>x.dataset.tab===tab?x.setAttribute('aria-current','page'):x.removeAttribute('aria-current'));f();mountMaps()}
 const go=t=>{tab=t;render();scrollTo(0,0)};
