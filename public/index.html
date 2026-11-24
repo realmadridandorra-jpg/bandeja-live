@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bandeja Pro · Pádel en directo</title>
 <meta name="description" content="Resultados en directo, cuadros y estadísticas del pádel profesional.">
-<meta name="theme-color" content="#2a6fdb">
+<meta name="theme-color" content="#0c1a46">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Bandeja">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -21,17 +21,18 @@
    COLOUR and TYPE: azul pista nocturno, blanco, amarillo pelota, coral para "en juego"; Barlow Condensed + Barlow.
    LAYOUT: marco móvil, cabecera azul, contenido, barra de pestañas inferior. */
 :root,:root[data-theme]{color-scheme:light;
---bg:#f4f7fc;--card:#fff;--ink:#16243a;--mute:#5d6b80;--soft:#eaf1fd;
---line:#e1e8f2;--court:#2a6fdb;--night:#1d4fae;--ball:#e9f257;--coral:#f0604a;--ok:#1f9d6b}
+--bg:#0c1a46;--card:#fff;--ink:#14204a;--mute:#5f6b8a;--soft:#eef2ff;--on:#e4eaff;--onm:#a9b8e6;
+--line:#e3e8f4;--court:#1f5cff;--night:#0a163b;--ball:#e6f04a;--coral:#ff6b55;--ok:#1f9d6b}
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Barlow,system-ui,sans-serif;overflow-x:clip}
+html{background:#13297a}
+body{margin:0;background:linear-gradient(180deg,#0c1a46 0,#13297a 700px,#13297a);min-height:100vh;color:var(--ink);font:16px/1.5 Barlow,system-ui,sans-serif;overflow-x:clip}
 h1,h2,h3{font-family:"Barlow Condensed",Barlow,sans-serif;font-weight:700;line-height:1.05;margin:0}
 button,input,select{font:inherit;font-size:16px}button{cursor:pointer}
 :focus-visible{outline:3px solid var(--ball);outline-offset:2px}
 .app{max-width:520px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative}
 @media(min-width:600px){.app{margin:24px auto;min-height:calc(100vh - 48px);border-radius:28px;overflow:hidden;box-shadow:0 20px 60px #0a1a3a40}}
-header{background:linear-gradient(150deg,#4b8ff0,#2a6fdb 60%,#2160c4);color:#fff;padding:calc(18px + env(safe-area-inset-top)) 18px 16px}
-header h1{font-size:34px}header p{margin:4px 0 0;color:#e3edff}
+header{background:transparent;color:#fff;padding:calc(18px + env(safe-area-inset-top)) 18px 16px}
+header h1{font-size:34px}header p{margin:4px 0 0;color:var(--onm)}
 main{flex:1;padding:14px 14px calc(100px + env(safe-area-inset-bottom))}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
 .meta{color:var(--mute);font-size:14px;display:flex;flex-wrap:wrap;gap:2px 12px}.meta span{white-space:nowrap}
@@ -132,6 +133,24 @@ nav button{background:none;border:0;color:var(--mute);display:grid;justify-items
 nav button[aria-current=page]{color:var(--court);font-weight:700}
 nav svg{width:24px;height:24px}
 @media(max-width:380px){.grid{grid-template-columns:minmax(0,1fr) repeat(var(--n),26px) 48px}.pt{font-size:28px}.nm{font-size:16px}}
+/* estilo PADLY: fondo marino, tarjetas blancas, azul eléctrico para lo seleccionado */
+#view>.sec,#view>h2{color:#fff}
+#view>.row-l,#view>.note,#view>.meta,#view>p.meta{color:var(--onm)}
+#view>.note a{color:var(--on)}
+.court{color:#9fbaff}
+.chip{background:#ffffff12;border-color:#ffffff26;color:#fff}.chip small{color:var(--onm)}
+.card .chip,.sheet .chip{background:#fff;border-color:var(--line);color:var(--ink)}.card .chip small,.sheet .chip small{color:var(--mute)}
+.chip[aria-pressed=true],.card .chip[aria-pressed=true],.sheet .chip[aria-pressed=true]{background:var(--court);border-color:var(--court);color:#fff;box-shadow:0 6px 16px #1f5cff55}
+.chip[aria-pressed=true] small{color:#dbe5ff}
+.btn.ghost{color:#fff;border-color:#ffffff33}
+.card .btn.ghost,.sheet .btn.ghost{color:var(--ink);border-color:var(--line)}
+.hero{background:linear-gradient(135deg,#2d6bff,#1f4fe0);color:#fff;border:0;box-shadow:0 10px 24px #0007}.hero .meta{color:#dbe5ff}.hero .live{color:#fff}.hero .live::before{background:var(--ball)}
+.hero .tag.P1{background:#fff;color:var(--court)}
+.board,.card{box-shadow:0 8px 22px #0003}
+nav{background:var(--night);border-top-color:#ffffff14}
+nav button{color:#7f91c4}
+nav button[aria-current=page]{color:var(--ball)}
+select{background:#fff}
 @media(prefers-reduced-motion:reduce){.live::before,.pt.flash{animation:none}.toast{transition:none}}
 </style>
 </head>
