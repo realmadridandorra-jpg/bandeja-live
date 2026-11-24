@@ -146,7 +146,7 @@ nav svg{width:24px;height:24px}
 .chip[aria-pressed=true] small{color:#dbe5ff}
 .btn.ghost{color:#fff;border-color:#ffffff33}
 .card .btn.ghost,.sheet .btn.ghost{color:var(--ink);border-color:var(--line)}
-.hero{background:linear-gradient(135deg,#2d6bff,#1f4fe0);color:#fff;border:0;box-shadow:0 10px 24px #0007}.hero .meta{color:#dbe5ff}.hero .live{color:#fff}.hero .live::before{background:var(--ball)}
+.hero{background:linear-gradient(90deg,rgba(3,8,19,.92) 0%,rgba(3,8,19,.6) 55%,rgba(3,8,19,.15) 100%),url(/court.svg) right center/cover no-repeat,#030813;color:#fff;border:1px solid rgba(255,255,255,.12);box-shadow:0 10px 24px #0007;min-height:150px;display:flex;flex-direction:column;justify-content:flex-end}.hero .meta{color:#dbe5ff}.hero .live{color:#fff}.hero .live::before{background:var(--ball)}
 .hero .tag.P1{background:#fff;color:var(--court)}
 .board,.card{box-shadow:0 8px 22px #0003}
 nav{background:var(--night);border-top-color:#ffffff14}
@@ -172,7 +172,7 @@ select{background:#fff}
 .pl{display:flex;align-items:center;gap:7px;line-height:1.15}
 .nm>span.pls{display:grid;gap:4px}
 .av{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 10.5px/1 Barlow,sans-serif;color:#fff;letter-spacing:.02em;position:relative;box-shadow:0 0 0 2px #ffffff30}
-.av em{position:absolute;right:-5px;bottom:-4px;font-style:normal;font-size:11px;line-height:1}
+.av.fl{background-size:cover;background-position:center;background-color:#fff}
 .pp{display:flex;align-items:center;gap:8px}
 .avs{display:flex;flex:none;gap:5px}.avs .av{width:26px;height:26px}
 .upair .pp>span:last-child{min-width:0}
@@ -314,7 +314,7 @@ const shortPair=s=>String(s).split('/').map(p=>surname(p.trim())).map(titleName)
 function mergeResults(auto){
   for(const [slug,r] of Object.entries(auto||{})){
     const base=RES[slug]||{};const out={...base};
-    for(const g of['m','f']){const a=r[g];if(!a)continue;const b=base[g];
+    for(const g of['m','f']){const a=r[g];if(!a)continue;const b=base[g];if(a[3])learn(a[0].split('/').map(x=>x.trim()),a[3]);
       if(!b||!b[0])out[g]=[shortPair(a[0]),shortPair(a[1]),a[2]];
       else if(pkey(b[0].split('/'))===pkey(a[0].split('/'))){out[g]=[b[0],b[1]||shortPair(a[1]),a[2]||b[2]]}}
     RES[slug]=out;}
@@ -325,12 +325,16 @@ const tStatus=t=>TODAY<t.start?'prox':TODAY>t.end?'fin':'live';
 let tab='directo',sub='auto',CFG=store.get('bandeja-live-cfg',{id:'',demo:false});
 let FAV=new Set(store.get('bandeja-fav',[]));const saveFav=()=>store.set('bandeja-fav',[...FAV]);
 let LIVE=null,LERR='',LAT=0,PREV={},PST={},FLASH=new Set(),loading=false,showAll=false,DAY=null;
-let DRAW={id:null,data:null,err:'',g:'MD',start:null},tf='todos',tg='m',VM=store.get('bandeja-vm','pista');
+let TT='cal',DRAW={id:null,data:null,err:'',g:'MD',start:null},tf='todos',tg='m',VM=store.get('bandeja-vm','pista');
 const ISO={ESP:'ES',ARG:'AR',ITA:'IT',FRA:'FR',POR:'PT',BRA:'BR',MEX:'MX',NED:'NL',GBR:'GB',BEL:'BE',SWE:'SE',CHI:'CL',URU:'UY',PAR:'PY',GER:'DE',UAE:'AE',QAT:'QA',USA:'US',DEN:'DK',FIN:'FI',EGY:'EG',KUW:'KW',SUI:'CH',AUT:'AT',RSA:'ZA',JPN:'JP',POL:'PL',CZE:'CZ',AUS:'AU',IRL:'IE',NOR:'NO',ECU:'EC',VEN:'VE',COL:'CO',PER:'PE',LTU:'LT',EST:'EE',UKR:'UA',CAN:'CA',KSA:'SA',BUL:'BG',ROU:'RO',HUN:'HU',CRO:'HR',SLO:'SI',LAT:'LV',MAR:'MA',TUN:'TN',IND:'IN',CHN:'CN',KOR:'KR'};
 const flag=c=>{const i=ISO[c];return i?String.fromCodePoint(...[...i].map(x=>127397+x.charCodeAt(0))):''};
 const AVC=['#3b6cff','#7a4dff','#e0569b','#00a39a','#f08a24','#2b9be0','#9b5de5','#ef476f'];
 const ini=p=>{const t=String(p).replace(/\./g,' ').trim().split(/\s+/);return((t[0]||'')[0]+(surname(p)[0]||'')).toUpperCase()};
-const av=(p,c)=>{let h=0;for(const ch of norm(p))h=(h*31+ch.charCodeAt(0))>>>0;return`<i class="av" style="background:${AVC[h%AVC.length]}" aria-hidden="true">${esc(ini(p))}${flag(c)?`<em>${flag(c)}</em>`:''}</i>`};
+const PFLAG={};const learn=(ps,fs)=>(ps||[]).forEach((p,i)=>{if(fs&&fs[i])PFLAG[norm(surname(p))]=fs[i]});
+const flagUrl=c=>ISO[c]?`https://flagcdn.com/w80/${ISO[c].toLowerCase()}.png`:'';
+const av=(p,c)=>{c=c||PFLAG[norm(surname(p))];if(c&&!PFLAG[norm(surname(p))])PFLAG[norm(surname(p))]=c;const u=flagUrl(c);
+  if(u)return`<i class="av fl" style="background-image:url(${u})" title="${esc(c)}" aria-hidden="true"></i>`;
+  let h=0;for(const ch of norm(p))h=(h*31+ch.charCodeAt(0))>>>0;return`<i class="av" style="background:${AVC[h%AVC.length]}" aria-hidden="true">${esc(ini(p))}</i>`};
 const isFav=t=>t.players.some(p=>FAV.has(norm(surname(p))));
 const matchFav=m=>m.teams.some(isFav);
 
@@ -369,6 +373,7 @@ async function poll(force){
       }
       PST[m.id]=m.status;
     }
+    for(const m of d.matches||[])for(const t of m.teams)learn(t.players,t.flags);
     LIVE=d;LERR='';LAT=Date.now();
   }catch(e){LERR=location.protocol==='file:'?'Abre la app desde tu web para recibir el marcador.':'Sin conexión con el servidor. Reintentando…'}
   loading=false;if(tab==='directo'&&sub==='auto'&&!document.querySelector('details[open]')&&!document.activeElement.matches('input,select'))render();
@@ -426,7 +431,7 @@ function rDirecto(){
   const favs=ms.filter(matchFav);
   const days=(LIVE&&LIVE.days)||[];
   let h='';
-  if(T&&LIVE.source!=='demo')h+=`<article class="card hero">${T.phase==='live'?'<span class="live">En juego</span>':T.phase==='upcoming'?'<span>Próximo torneo</span>':'<span>Último torneo</span>'}<h2>${esc(T.name)}${T.city?' · '+esc(T.city):''}</h2><div class="meta">${T.cat?`<span class="tag ${esc(T.cat)}">${esc(T.cat)}</span>`:''}${T.start?`<span>${rng(T.start,T.end)}</span>`:''}</div>${CAL.find(c=>c.id===T.id&&GEO[c.slug])?'<div class="map" data-map="now"></div>':''}</article>`;
+  if(T&&LIVE.source!=='demo')h+=`<article class="card hero">${T.phase==='live'?'<span class="live">En juego</span>':T.phase==='upcoming'?'<span>Próximo torneo</span>':'<span>Último torneo</span>'}<h2>${esc(T.name)}${T.city?' · '+esc(T.city):''}</h2><div class="meta">${T.cat?`<span class="tag ${esc(T.cat)}">${esc(T.cat)}</span>`:''}${T.start?`<span>${rng(T.start,T.end)}</span>`:''}</div></article>`;
   if(days.length)h+=`<div class="seg" role="group" aria-label="Días del torneo">${days.map(d=>{const[m,dd]=d.label.split(' ');return`<button class="chip" data-day="${d.n}" aria-pressed="${(DAY?Number(DAY)===d.n:d.active)}">${EN_W[d.week]||d.week}<small>${dd} ${EN_M[m]||''}</small></button>`}).join('')}</div>`;
   h+=`<div class="row-l"><span>${LIVE&&LIVE.source==='demo'?'<strong>Modo demostración</strong> · ':''}${T&&T.dayLabel?(DAY?'':'Hoy, ')+esc(dayEs(T.dayLabel))+' · ':''}${ago()}</span><button class="btn ghost sm" id="refresh">Actualizar</button></div>`;
   if(LERR)h+=`<div class="card empty">${esc(LERR)}</div>`;
@@ -550,19 +555,21 @@ function pastRow(t){const r=RES[t.slug]||{},a=d0(t.start);
   return`<details class="pr"><summary><span class="pd">${a.getDate()}<br><small style="font:500 12px Barlow;color:var(--mute)">${MES[a.getMonth()]}</small></span><span class="pn"><b>${esc(t.name)}</b><span class="tag ${t.cat}">${t.cat}</span><small>${esc(sm)}</small></span><span class="chev">›</span></summary>
   ${r.m||r.f?`<div class="fin">${fin(r.m,'Masc.')}${fin(r.f,'Fem.')}</div>`:''}<button class="btn ghost sm" data-godraw="${t.id}">Ver cuadro</button></details>`}
 function rTorneos(){
-  const F=[['todos','Todos'],['Major','Major'],['P1','P1'],['P2','P2'],['prox','Próximos']];
-  const sel=CAL.filter(t=>tf==='todos'||(tf==='prox'?tStatus(t)!=='fin':t.cat===tf));
-  const up=sel.filter(t=>tStatus(t)!=='fin'),past=sel.filter(t=>tStatus(t)==='fin').reverse();
-  view.innerHTML=`<section class="card glass" style="padding:0;overflow:hidden;margin-bottom:14px"><div class="smap" data-map="season"></div></section>
-  <div class="seg" role="group">${F.map(([k,t])=>`<button class="chip" data-tf="${k}" aria-pressed="${tf===k}">${t}</button>`).join('')}</div>`+
-  (up.length?`<h2 class="sec" style="margin-top:4px">Lo que queda</h2>`+up.map(card).join(''):'')+
-  (past.length?`<h2 class="sec">Ya jugados (${past.length})</h2><section class="card" style="padding:2px 14px">${past.map(pastRow).join('')}</section>`:'')+
-  (!up.length&&!past.length?'<p class="note">Nada con este filtro.</p>':'')+
-  `<p class="note">Qatar Airways Premier Padel Tour 2026. En amarillo, el torneo que se juega ahora; el mapa y los campeones se actualizan solos.</p>`;
+  const up=CAL.filter(t=>tStatus(t)!=='fin'),allPast=CAL.filter(t=>tStatus(t)==='fin').reverse();
+  let h=`<div class="seg" role="tablist" aria-label="Torneos"><button class="chip" data-tt="cal" aria-pressed="${TT==='cal'}">En juego y próximos (${up.length})</button><button class="chip" data-tt="past" aria-pressed="${TT==='past'}">Ya jugados (${allPast.length})</button></div>`;
+  if(TT==='cal'){
+    h+=`<section class="card glass" style="padding:0;overflow:hidden;margin-bottom:14px"><div class="smap" data-map="season"></div></section>`+(up.length?up.map(card).join(''):'<div class="card empty">La temporada ha terminado.</div>');
+  }else{
+    const F=[['todos','Todos'],['Major','Major'],['P1','P1'],['P2','P2']];
+    const past=allPast.filter(t=>tf==='todos'||t.cat===tf);
+    h+=`<div class="seg" role="group" aria-label="Categoría">${F.map(([k,t])=>`<button class="chip sm" data-tf="${k}" aria-pressed="${tf===k}">${t}</button>`).join('')}</div>`+
+      (past.length?`<section class="card" style="padding:2px 14px">${past.map(pastRow).join('')}</section>`:'<p class="note">Nada con este filtro.</p>');
+  }
+  view.innerHTML=h+`<p class="note">Qatar Airways Premier Padel Tour 2026. El mapa y los campeones se actualizan solos.</p>`;
 }
 
 /* ---------- títulos ---------- */
-const avt=p=>{let h=0;for(const ch of norm(p))h=(h*31+ch.charCodeAt(0))>>>0;return`<i class="av" style="background:${AVC[h%AVC.length]}" aria-hidden="true">${esc(norm(p).slice(0,2).toUpperCase())}</i>`};
+const avt=p=>{const c=PFLAG[norm(surname(p))];if(flagUrl(c))return av(p,c);let h=0;for(const ch of norm(p))h=(h*31+ch.charCodeAt(0))>>>0;return`<i class="av" style="background:${AVC[h%AVC.length]}" aria-hidden="true">${esc(norm(p).slice(0,2).toUpperCase())}</i>`};
 function rTitulos(){
   const g=tg==='m'?'m':'f',c=new Map();
   for(const t of CAL){const r=RES[t.slug]&&RES[t.slug][g];if(!r||!r[0])continue;const k=pkey(r[0].split('/'));const e=c.get(k)||{name:r[0],n:0};e.n++;c.set(k,e)}
@@ -665,6 +672,7 @@ document.addEventListener('click',e=>{
   if(b.id==='refresh'){poll(true);return}
   if(b.id==='more'){showAll=!showAll;render();return}
   if(b.dataset.tf){tf=b.dataset.tf;render();return}
+  if(b.dataset.tt){TT=b.dataset.tt;render();scrollTo(0,0);return}
   if(b.dataset.tg){tg=b.dataset.tg;render();return}
   if(b.dataset.g){DRAW.g=b.dataset.g;DRAW.start=null;render();return}
   if(b.dataset.vm){VM=b.dataset.vm;store.set('bandeja-vm',VM);render();return}
