@@ -13,6 +13,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Bandeja">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* VOICE: app deportiva publicada, de retransmisión.
@@ -206,6 +208,29 @@ select{background:#fff}
 .tp{display:flex;align-items:center;gap:12px}
 .tp .avs{gap:0}.tp .av{width:42px;height:42px;font-size:14px;box-shadow:0 0 0 3px #fff}.tp .avs .av+.av{margin-left:-10px}
 .rk.big:first-of-type .tt{color:var(--court)}
+/* trofeo detrás del número de títulos */
+.rk.big .tt{position:relative;z-index:0;min-width:56px;text-align:center}
+.rk.big .tt::before{content:"";position:absolute;inset:-8px -2px;z-index:-1;opacity:.16;background:center/contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231f5cff'%3E%3Cpath d='M7 3h10v2h3v3a4 4 0 0 1-4 4h-.3A5 5 0 0 1 13 14.9V18h3v3H8v-3h3v-3.1A5 5 0 0 1 8.3 12H8a4 4 0 0 1-4-4V5h3zm0 4H6v1a2 2 0 0 0 1 1.7zm10 0v2.7A2 2 0 0 0 18 8V7z'/%3E%3C/svg%3E")}
+.rk.big:first-of-type .tt::before{opacity:.28}
+/* mapas */
+.map{height:150px;border-radius:14px;overflow:hidden;margin-top:12px;background:#0a163b}
+.smap{height:270px;border-radius:18px;overflow:hidden;background:#0a163b}
+.map .leaflet-container,.smap .leaflet-container,.mapbox{width:100%;height:100%;background:#0a163b;font:inherit}
+.leaflet-tooltip.tt-now{background:var(--ball);color:#14204a;border:0;font-weight:700;box-shadow:0 4px 12px #0006}
+.leaflet-tooltip.tt-now::before{border-top-color:var(--ball)}
+.leaflet-control-attribution{font-size:10px!important;background:#0a163bcc!important;color:#a9b8e6!important}.leaflet-control-attribution a{color:#cfd9ff!important}
+/* torneos ya jugados en lista corta */
+.pr{border-top:1px solid var(--line)}.pr:first-child{border-top:0}
+.pr summary{display:grid;grid-template-columns:50px minmax(0,1fr) 14px;gap:10px;align-items:center;padding:10px 0;cursor:pointer;list-style:none}
+.pr summary::-webkit-details-marker{display:none}
+.pd{font:700 16px/1.1 "Barlow Condensed",sans-serif;color:var(--court);text-align:center}
+.pn{min-width:0}.pn b{font-family:"Barlow Condensed";font-size:18px}.pn .tag{margin-left:6px;font-size:11px;padding:1px 7px;vertical-align:2px}
+.pn small{display:block;color:var(--mute);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chev{color:var(--mute);transition:transform .2s}.pr[open] .chev{transform:rotate(90deg)}
+.pr .fin{margin:0 0 8px 60px}.pr .btn{margin:0 0 12px 60px}
+/* cuadro: huecos con lo que ya se sabe */
+.bm.tbd2{border-style:dashed;cursor:default}.bm.tbd2 .bl{color:var(--onm)}.bm.tbd2 .bl.k{color:#fff;font-weight:600}
+.pfl{display:inline-flex;align-items:center;gap:6px;text-decoration:none}
 @media(prefers-reduced-motion:reduce){.live::before,.pt.flash{animation:none}.toast{transition:none}}
 </style>
 </head>
@@ -258,6 +283,8 @@ let CAL=[
 ['kuwait','Kuwait Major','Major','Kuwait','FIP-2026-4410','2026-10-23','2026-10-31'],['dubai','Dubái','P1','Dubái, EAU','FIP-2026-4501','2026-11-08','2026-11-15'],
 ['mexico','Mexico Major','Major','Acapulco, México','FIP-2026-4801','2026-11-21','2026-11-29'],['finals','Premier Padel Finals','Finals','Barcelona, España','FIP-2026-5101','2026-12-10','2026-12-13']
 ].map(([slug,name,cat,city,id,start,end])=>({slug,name,cat,city,id,start,end}));
+const GEO={riyadh:[24.71,46.68],gijon:[43.53,-5.66],cancun:[21.16,-86.85],miami:[25.76,-80.19],newgiza:[30.01,31.06],brussels:[50.85,4.35],asuncion:[-25.26,-57.58],'buenos-aires':[-34.6,-58.38],italy:[41.9,12.5],valencia:[39.47,-0.38],valladolid:[41.65,-4.72],bordeaux:[44.84,-0.58],malaga:[36.72,-4.42],pretoria:[-25.75,28.23],london:[51.51,-0.13],madrid:[40.42,-3.7],paris:[48.86,2.35],rotterdam:[51.92,4.48],germany:[51.23,6.77],milano:[45.46,9.19],kuwait:[29.38,47.98],dubai:[25.2,55.27],mexico:[16.85,-99.82],finals:[41.39,2.17]};
+const PFS={riyadh:'riyadh-season-p1-2026',gijon:'gijon-p2-2026',cancun:'cancun-p2-2026',miami:'miami-p1-2026',newgiza:'newgiza-p2-2026',brussels:'brussels-p2-2026',asuncion:'asuncion-p2-2026','buenos-aires':'buenos-aires-p1-2026',italy:'italy-major-2026',valencia:'valencia-p1-2026',valladolid:'valladolid-p2-2026',bordeaux:'bordeaux-p2-2026',malaga:'malaga-p1-2026',pretoria:'pretoria-p1-2026',london:'london-p1-2026',madrid:'comunidad-de-madrid-p1-2026',paris:'paris-major-2026',rotterdam:'rotterdam-p2-2026',germany:'germany-p2-2026',milano:'milano-p1-2026',kuwait:'kuwait-major-2026',dubai:'emaar-dubai-premier-padel-p1-2026',mexico:'mexico-major-2026',finals:'premier-padel-finals-2026'};
 const BASE_RES={
 riyadh:{m:['Coello / Tapia','Galán / Chingotto','6-4 6-2'],f:['Sánchez / Ustero','Brea / Triay','3-6 6-1 6-4']},
 gijon:{m:['Galán / Chingotto','Coello / Tapia','7-5 7-6'],f:['Brea / Triay','Sánchez / Ustero','6-4 6-7 6-3']},
@@ -398,7 +425,7 @@ function rDirecto(){
   const favs=ms.filter(matchFav);
   const days=(LIVE&&LIVE.days)||[];
   let h='';
-  if(T&&LIVE.source!=='demo')h+=`<article class="card hero">${T.phase==='live'?'<span class="live">En juego</span>':T.phase==='upcoming'?'<span>Próximo torneo</span>':'<span>Último torneo</span>'}<h2>${esc(T.name)}${T.city?' · '+esc(T.city):''}</h2><div class="meta">${T.cat?`<span class="tag ${esc(T.cat)}">${esc(T.cat)}</span>`:''}${T.start?`<span>${rng(T.start,T.end)}</span>`:''}</div></article>`;
+  if(T&&LIVE.source!=='demo')h+=`<article class="card hero">${T.phase==='live'?'<span class="live">En juego</span>':T.phase==='upcoming'?'<span>Próximo torneo</span>':'<span>Último torneo</span>'}<h2>${esc(T.name)}${T.city?' · '+esc(T.city):''}</h2><div class="meta">${T.cat?`<span class="tag ${esc(T.cat)}">${esc(T.cat)}</span>`:''}${T.start?`<span>${rng(T.start,T.end)}</span>`:''}</div>${CAL.find(c=>c.id===T.id&&GEO[c.slug])?'<div class="map" data-map="now"></div>':''}</article>`;
   if(days.length)h+=`<div class="seg" role="group" aria-label="Días del torneo">${days.map(d=>{const[m,dd]=d.label.split(' ');return`<button class="chip" data-day="${d.n}" aria-pressed="${(DAY?Number(DAY)===d.n:d.active)}">${EN_W[d.week]||d.week}<small>${dd} ${EN_M[m]||''}</small></button>`}).join('')}</div>`;
   h+=`<div class="row-l"><span>${LIVE&&LIVE.source==='demo'?'<strong>Modo demostración</strong> · ':''}${T&&T.dayLabel?(DAY?'':'Hoy, ')+esc(dayEs(T.dayLabel))+' · ':''}${ago()}</span><button class="btn ghost sm" id="refresh">Actualizar</button></div>`;
   if(LERR)h+=`<div class="card empty">${esc(LERR)}</div>`;
@@ -474,7 +501,12 @@ function bcard(m){const[a,b]=m.teams;
 function bracket(rounds){
   const byD=new Map();let D=0;
   for(const r of rounds)for(const m of r.matches){const n=parseInt(String(m.id).replace(/\D/g,''),10);if(!n)continue;const d=Math.floor(Math.log2(n));D=Math.max(D,d);if(!byD.has(d))byD.set(d,{name:r.name,m:new Map()});byD.get(d).m.set(n-2**d,m)}
-  const start=Math.min(DRAW.start??Math.min(D,3),D);
+  let pendD=-1;for(const[d,R]of byD)for(const m of R.m.values())if(m.status!=='finished')pendD=Math.max(pendD,d);
+  const start=Math.min(DRAW.start??(pendD>=0?Math.min(pendD,4):Math.min(D,3)),D);
+  const ph=n=>{const kids=[2*n,2*n+1].map(c=>{const d=Math.floor(Math.log2(c)),R=byD.get(d);return R&&R.m.get(c-2**d)});
+    if(!kids[0]&&!kids[1])return'<div class="bm tbd">Por decidir</div>';
+    const lab=m=>{if(!m)return['Por decidir',0];const w=m.teams.find(t=>t.winner);return w?[short(w),1]:['Gan. '+short(m.teams[0])+' – '+short(m.teams[1]),0]};
+    return`<div class="bm tbd2">${kids.map(m=>{const[t,k]=lab(m);return`<div class="bl ${k?'k':''}"><span>${esc(t)}</span></div>`}).join('')}</div>`};
   const opts=[];for(let d=D;d>=1;d--)opts.push(d);
   let h=opts.length>1?`<div class="seg" role="group" aria-label="Desde qué ronda">${opts.map(d=>`<button class="chip sm" data-bstart="${d}" aria-pressed="${d===start}">${d===D&&D>3?'Completo':'Desde '+DEF_R[d].toLowerCase()}</button>`).join('')}</div>`:'';
   const cols=[];for(let d=start;d>=0;d--)cols.push(d);
@@ -482,7 +514,7 @@ function bracket(rounds){
   cols.forEach((d,ci)=>{const R=byD.get(d);const span=2**(start-d);
     h+=`<div class="bh" style="grid-column:${ci+1};grid-row:1">${esc(R?tr(R.name):DEF_R[d])}</div>`;
     for(let k=0;k<2**d;k++){const m=R&&R.m.get(k);
-      h+=`<div class="bs ${ci===0?'first':''} ${d===0?'last':''}" style="grid-column:${ci+1};grid-row:${2+k*span}/span ${span}">${m?bcard(m):'<div class="bm tbd">Por decidir</div>'}</div>`}});
+      h+=`<div class="bs ${ci===0?'first':''} ${d===0?'last':''}" style="grid-column:${ci+1};grid-row:${2+k*span}/span ${span}">${m?bcard(m):ph(2**d+k)}</div>`}});
   return h+'</div></div>';
 }
 function rCuadro(){
@@ -496,7 +528,7 @@ function rCuadro(){
   else{
     const rounds=DRAW.data.draw[DRAW.g]||[];
     if(!rounds.length)h+='<div class="card empty">El cuadro principal aún no ha empezado.</div>';
-    else h+=bracket(rounds)+`<p class="note">Cuadro principal de ${esc(t.name)}. Desliza hacia los lados para avanzar de ronda y toca un partido para ver sus estadísticas.</p>`;
+    else h+=bracket(rounds)+(PFS[t.slug]?`<p style="text-align:center;margin:12px 0 0"><a class="btn ghost sm pfl" href="https://www.padelfip.com/es/eventos/${PFS[t.slug]}/?tab=Cuadros" target="_blank" rel="noopener">Ver el cuadro oficial completo en padelfip ↗</a></p>`:'')+`<p class="note">Cuadro principal de ${esc(t.name)}. Las parejas que entran directamente en una ronda aparecen cuando su partido entra en el orden de juego. Desliza hacia los lados para avanzar de ronda y toca un partido para ver sus estadísticas.</p>`;
   }
   view.innerHTML=h;
 }
@@ -512,13 +544,20 @@ function card(t){
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">${s==='live'?`<button class="btn ball sm" data-golive="1">Ver en directo</button>`:''}${s!=='prox'?`<button class="btn ghost sm" data-godraw="${t.id}">Ver cuadro</button>`:''}</div>
   </div></article>`;
 }
+function pastRow(t){const r=RES[t.slug]||{},a=d0(t.start);
+  const w=g=>r[g]&&r[g][0]?r[g][0]:'';const sm=[w('m'),w('f')].filter(Boolean).join(' · ')||'Campeones pendientes';
+  return`<details class="pr"><summary><span class="pd">${a.getDate()}<br><small style="font:500 12px Barlow;color:var(--mute)">${MES[a.getMonth()]}</small></span><span class="pn"><b>${esc(t.name)}</b><span class="tag ${t.cat}">${t.cat}</span><small>${esc(sm)}</small></span><span class="chev">›</span></summary>
+  ${r.m||r.f?`<div class="fin">${fin(r.m,'Masc.')}${fin(r.f,'Fem.')}</div>`:''}<button class="btn ghost sm" data-godraw="${t.id}">Ver cuadro</button></details>`}
 function rTorneos(){
   const F=[['todos','Todos'],['Major','Major'],['P1','P1'],['P2','P2'],['prox','Próximos']];
-  const L=CAL.filter(t=>tf==='todos'||(tf==='prox'?tStatus(t)!=='fin':t.cat===tf));
-  const up=CAL.filter(t=>tStatus(t)!=='fin');
-  view.innerHTML=`<div class="seg" role="group">${F.map(([k,t])=>`<button class="chip" data-tf="${k}" aria-pressed="${tf===k}">${t}</button>`).join('')}</div>`+
-  (tf==='todos'?`<h2 class="sec" style="margin-top:4px">Lo que queda</h2>`+up.map(card).join('')+`<h2 class="sec">Ya jugados</h2>`+CAL.filter(t=>tStatus(t)==='fin').reverse().map(card).join(''):L.map(card).join('')||'<p class="note">Nada con este filtro.</p>')+
-  `<p class="note">Qatar Airways Premier Padel Tour 2026. Los campeones se añaden solos al terminar cada torneo.</p>`;
+  const sel=CAL.filter(t=>tf==='todos'||(tf==='prox'?tStatus(t)!=='fin':t.cat===tf));
+  const up=sel.filter(t=>tStatus(t)!=='fin'),past=sel.filter(t=>tStatus(t)==='fin').reverse();
+  view.innerHTML=`<section class="card glass" style="padding:0;overflow:hidden;margin-bottom:14px"><div class="smap" data-map="season"></div></section>
+  <div class="seg" role="group">${F.map(([k,t])=>`<button class="chip" data-tf="${k}" aria-pressed="${tf===k}">${t}</button>`).join('')}</div>`+
+  (up.length?`<h2 class="sec" style="margin-top:4px">Lo que queda</h2>`+up.map(card).join(''):'')+
+  (past.length?`<h2 class="sec">Ya jugados (${past.length})</h2><section class="card" style="padding:2px 14px">${past.map(pastRow).join('')}</section>`:'')+
+  (!up.length&&!past.length?'<p class="note">Nada con este filtro.</p>':'')+
+  `<p class="note">Qatar Airways Premier Padel Tour 2026. En amarillo, el torneo que se juega ahora; el mapa y los campeones se actualizan solos.</p>`;
 }
 
 /* ---------- títulos ---------- */
@@ -578,10 +617,36 @@ function rManual(){
   <p class="note">Marcador manual para tus propios partidos: suma cada punto tocando la pareja que lo gana.</p>`;
 }
 
+/* ---------- mapas (Leaflet + mapa base de CARTO/OpenStreetMap) ---------- */
+const MAPS={};
+function curT(){const id=LIVE&&LIVE.tournament&&LIVE.tournament.id;return CAL.find(c=>c.id===id)||CAL.find(c=>tStatus(c)==='live')||CAL.find(c=>tStatus(c)==='prox')||CAL[CAL.length-1]}
+function mountMaps(){
+  const phs=document.querySelectorAll('[data-map]');if(!phs.length)return;
+  if(!window.L){setTimeout(mountMaps,400);return}
+  phs.forEach(ph=>{const mode=ph.dataset.map;let M=MAPS[mode];
+    if(!M){const el=document.createElement('div');el.className='mapbox';ph.appendChild(el);
+      const map=L.map(el,{zoomControl:mode==='season',scrollWheelZoom:false,dragging:mode==='season',touchZoom:mode==='season',doubleClickZoom:mode==='season',boxZoom:false,keyboard:false,attributionControl:true});
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:18,subdomains:'abcd',attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(map);
+      M=MAPS[mode]={el,map,layer:L.layerGroup().addTo(map),key:''}}
+    else ph.appendChild(M.el);
+    const cur=curT(),key=mode+cur.slug+CAL.length;
+    setTimeout(()=>M.map.invalidateSize(),30);
+    if(M.key===key)return;M.key=key;M.layer.clearLayers();
+    if(mode==='now'){const g=GEO[cur.slug];if(!g)return;M.map.setView(g,4);
+      L.circleMarker(g,{radius:16,color:'#e6f04a',weight:2,opacity:.5,fillOpacity:.12}).addTo(M.layer);
+      L.circleMarker(g,{radius:7,color:'#14204a',weight:2,fillColor:'#e6f04a',fillOpacity:1}).addTo(M.layer).bindTooltip(cur.city,{permanent:true,direction:'top',className:'tt-now',offset:[0,-8]});}
+    else{const pts=[];
+      for(const t of CAL){const g=GEO[t.slug];if(!g)continue;pts.push(g);const st=tStatus(t),now=t.slug===cur.slug;
+        const mk=L.circleMarker(g,now?{radius:9,color:'#14204a',weight:2,fillColor:'#e6f04a',fillOpacity:1}:{radius:5,color:'#fff',weight:1,fillColor:st==='fin'?'#7f91c4':'#1f5cff',fillOpacity:.95}).addTo(M.layer);
+        mk.bindTooltip(`${t.name} · ${rng(t.start,t.end)}`,now?{permanent:true,direction:'top',className:'tt-now',offset:[0,-8]}:{direction:'top'});}
+      if(pts.length)M.map.fitBounds(pts,{padding:[24,24]});}
+  });
+}
+
 /* ---------- navegación ---------- */
 const TAB={directo:['En directo','Resultados que se actualizan solos',rDirecto],cuadro:['Cuadro','Ronda a ronda, con estadísticas',rCuadro],torneos:['Torneos','Calendario Premier Padel 2026',rTorneos],titulos:['Títulos','Quién está ganando la temporada',rTitulos]};
 function render(){const[a,b,f]=TAB[tab];$('#title').textContent=a;$('#sub').textContent=b;
-  document.querySelectorAll('nav button').forEach(x=>x.dataset.tab===tab?x.setAttribute('aria-current','page'):x.removeAttribute('aria-current'));f()}
+  document.querySelectorAll('nav button').forEach(x=>x.dataset.tab===tab?x.setAttribute('aria-current','page'):x.removeAttribute('aria-current'));f();mountMaps()}
 const go=t=>{tab=t;render();scrollTo(0,0)};
 
 document.addEventListener('click',e=>{
