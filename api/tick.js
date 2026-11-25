@@ -7,6 +7,14 @@ import { kv } from '../lib/kv.js';
 import { send, norm, surname } from '../lib/push.js';
 
 const pair = t => t.players.map(surname).join('/');
+// Formato "marcador" para la pantalla de bloqueo: números en negrita, separadores y quién saca.
+const BD = s => String(s).replace(/[0-9]/g, d => String.fromCodePoint(0x1D7EC + Number(d)));
+const up = t => t.players.map(p => surname(p).toUpperCase()).join(' / ');
+function scoreboard(m) {
+  const [A, B] = m.teams;
+  const row = T => `${T.serving && m.status === 'live' ? '◉' : '○'} ${up(T)}   ${T.sets.map(BD).join(' ┃ ') || BD(0)}${m.status === 'live' && T.point ? `  ‹${T.point}›` : ''}`;
+  return row(A) + '\n' + row(B);
+}
 const won = (a, b) => (a ?? 0) > (b ?? 0);
 
 function events(m, before) {
@@ -14,15 +22,15 @@ function events(m, before) {
   const vs = `${pair(A)} vs ${pair(B)}`;
   const n = Math.max(A.sets.length, B.sets.length);
   const out = [];
-  if (before.s === 'upcoming' && m.status === 'live') out.push({ title: '🎾 Empieza el partido', body: `${vs} · ${m.court || ''}` });
+  if (before.s === 'upcoming' && m.status === 'live') out.push({ title: `⚡ EN JUEGO · ${String(m.court || '').toUpperCase()}`, body: scoreboard(m) });
   if (m.status === 'live' && n > before.n && before.n >= 1) {
     const k = before.n - 1;
     const w = won(A.sets[k], B.sets[k]) ? A : B;
-    out.push({ title: `Set para ${pair(w)}`, body: `${vs} · ${A.sets.slice(0, n - 1).map((s, i) => `${s}-${B.sets[i]}`).join(' ')}` });
+    out.push({ title: `▰▰ SET ${k + 1} PARA ${up(w)}`, body: scoreboard(m) });
   }
   if (before.s !== 'finished' && m.status === 'finished') {
     const w = m.teams.find(t => t.winner) || (A.sets.filter((s, i) => s > B.sets[i]).length > B.sets.filter((s, i) => s > A.sets[i]).length ? A : B);
-    out.push({ title: `🏁 Ganan ${pair(w)}`, body: `${vs} · ${A.sets.map((s, i) => `${s}-${B.sets[i] ?? ''}`).join(' ')}` });
+    out.push({ title: `🏁 FINAL · GANAN ${up(w)}`, body: scoreboard(m) });
   }
   return out;
 }
@@ -47,6 +55,9 @@ export default async function handler(req, res) {
       for (const e of events(m, before)) evs.push({ ...e, who: m.teams.flatMap(x => x.players.map(pl => norm(surname(pl)))), tag: `por3-${m.id}` });
     }
     await kv('SET', 'por3:mstate', JSON.stringify(next), 'EX', 259200);
+    // Resultados para la porra: quién ganó cada partido terminado (0 = pareja de arriba, 1 = de abajo).
+    const fin = p.matches.flatMap(m => { const w = m.teams.findIndex(x => x.winner); return m.status === 'finished' && w >= 0 ? [m.id, String(w)] : []; });
+    if (fin.length) await kv('HSET', 'por3:res', ...fin);
     let sent = 0, gone = 0;
     if (evs.length) {
       const all = await kv('HGETALL', 'por3:subs') || [];
