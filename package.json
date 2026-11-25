@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Bandeja Pro: torneos de pádel profesional con marcador en directo automático",
+  "description": "Por3: torneos de pádel profesional con marcador en directo y avisos",
   "scripts": {
     "dev": "vercel dev",
     "probe": "node scripts/probe.mjs"
   },
   "dependencies": {
-    "cheerio": "^1.0.0"
+    "cheerio": "^1.0.0",
+    "web-push": "^3.6.7"
   },
-  "engines": { "node": ">=18" }
+  "engines": {
+    "node": ">=18"
+  }
 }
