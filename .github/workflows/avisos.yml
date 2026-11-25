@@ -11,3 +11,5 @@ jobs:
     steps:
       - name: Revisar partidos y avisar
         run: curl -sS --max-time 60 "https://bandeja-live-puce.vercel.app/api/tick" || true
+      - name: Guardar la temporada (cara a cara)
+        run: curl -sS --max-time 60 "https://bandeja-live-puce.vercel.app/api/season" || true
