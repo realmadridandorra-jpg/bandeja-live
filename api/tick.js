@@ -12,7 +12,7 @@ const BD = s => String(s).replace(/[0-9]/g, d => String.fromCodePoint(0x1D7EC + 
 const up = t => t.players.map(p => surname(p).toUpperCase()).join(' / ');
 function scoreboard(m) {
   const [A, B] = m.teams;
-  const row = T => `${T.serving && m.status === 'live' ? '◉' : '○'} ${up(T)}   ${T.sets.map(BD).join(' ┃ ') || BD(0)}${m.status === 'live' && T.point ? `  ‹${T.point}›` : ''}`;
+  const row = T => `${T.serving && m.status === 'live' ? '◉' : '○'} ${up(T)}   ${T.sets.map(BD).join(' ┃ ') || BD(0)}`;
   return row(A) + '\n' + row(B);
 }
 const won = (a, b) => (a ?? 0) > (b ?? 0);
