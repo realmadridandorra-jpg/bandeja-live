@@ -58,8 +58,10 @@ export default async function handler(req, res) {
     // Resultados para la porra: quién ganó cada partido terminado (0 = pareja de arriba, 1 = de abajo).
     const fin = p.matches.flatMap(m => { const w = m.teams.findIndex(x => x.winner); return m.status === 'finished' && w >= 0 ? [m.id, String(w)] : []; });
     if (fin.length) await kv('HSET', 'por3:res', ...fin);
+    // Avisos al móvil quitados (se usa la app oficial). Se borran las suscripciones que queden.
     let sent = 0, gone = 0;
-    if (evs.length) {
+    await kv('DEL', 'por3:subs');
+    if (false) {
       const all = await kv('HGETALL', 'por3:subs') || [];
       for (let i = 0; i < all.length; i += 2) {
         const id = all[i]; let rec; try { rec = JSON.parse(all[i + 1]); } catch { continue; }
