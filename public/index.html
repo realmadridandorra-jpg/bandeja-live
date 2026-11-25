@@ -212,16 +212,22 @@ select{background:#fff}
 .br{display:grid;min-width:max-content}
 .bh{font:700 16px "Barlow Condensed",sans-serif;color:#9fbaff;padding:0 12px 8px}
 .bs{position:relative;display:flex;align-items:center;padding:0 12px}
-.bs:not(.last)::after{content:"";position:absolute;right:0;top:50%;width:12px;border-top:2px solid rgba(255,255,255,.25)}
-.bs:not(.first)::before{content:"";position:absolute;left:0;top:25%;bottom:25%;border-left:2px solid rgba(255,255,255,.25)}
+.bs:not(.last)::after{content:"";position:absolute;right:0;top:50%;width:13px;border-top:2px solid rgba(159,186,255,.35)}
+.bs.jt:not(.last):not(.solo)::before{content:"";position:absolute;right:0;top:50%;bottom:0;border-right:2px solid rgba(159,186,255,.35)}
+.bs.jb:not(.last):not(.solo)::before{content:"";position:absolute;right:0;top:0;bottom:50%;border-right:2px solid rgba(159,186,255,.35)}
 .bm{position:relative;width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:5px 9px;cursor:pointer;color:#fff}
-.bs:not(.first) .bm::before{content:"";position:absolute;left:-13px;top:50%;width:12px;border-top:2px solid rgba(255,255,255,.25)}
+.bs:not(.first) .bm::before,.bs:not(.first) .champ::before{content:"";position:absolute;left:-13px;top:50%;width:12px;border-top:2px solid rgba(159,186,255,.35)}
 .bm.tbd{color:var(--onm);font-size:13px;text-align:center;padding:11px 6px;border-style:dashed;cursor:default}
 .bm.lv{border-color:var(--coral)}.bm.fav{border-color:var(--ball)}
 .bl{display:flex;justify-content:space-between;gap:8px;font-size:13px;line-height:1.4;white-space:nowrap}
 .bl span{overflow:hidden;text-overflow:ellipsis}.bl small{color:var(--onm);font-size:11px}
-.bl b{font-family:"Barlow Condensed";font-size:15px;letter-spacing:.08em;color:#c8d3f5;font-weight:700}
-.bl.w{font-weight:700}.bl.w b{color:var(--ball)}
+.bm{backdrop-filter:blur(6px);box-shadow:0 6px 16px #0003;padding:6px 8px}.bm.done{background:rgba(255,255,255,.06)}.bm.lv{box-shadow:0 0 0 1px var(--coral),0 0 18px #ff6b6b55}
+.bl{align-items:center;gap:6px;justify-content:flex-start}.bl .bn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;font-size:13.5px}.bl .bn small{margin-right:4px;color:#9fbaff}
+.bfl{display:flex;flex:none}.bfl i{width:14px;height:14px;border-radius:50%;background-size:cover;background-position:center;box-shadow:0 0 0 1.5px #13297a}.bfl i+i{margin-left:-4px}
+.bsc{display:flex;gap:3px;align-items:center;flex:none}.bsc b{min-width:15px;text-align:center;font:700 15px "Barlow Condensed",sans-serif;color:#9fb0d8;border-radius:4px}.bsc b.hi{color:#fff}.bsc em{font-style:normal;color:var(--ball);font-weight:900;margin-left:2px}
+.bl.w .bn{color:#fff;font-weight:700}.bl.w .bsc b.hi{color:var(--ball)}.bl.lo{opacity:.55}
+.btag{position:absolute;top:-7px;right:8px;font-size:9.5px;font-weight:800;line-height:1;letter-spacing:.05em;padding:3px 6px;border-radius:999px;background:#1f3a8a;color:#c8d4f5;text-transform:uppercase}.btag.lv{background:var(--coral);color:#fff}
+.champ{position:relative;width:100%;display:grid;justify-items:center;gap:6px;text-align:center;padding:14px 10px;border-radius:16px;background:linear-gradient(160deg,#e6f04a33,#1f5cff22);border:1px solid #e6f04a88;box-shadow:0 0 30px #e6f04a33;color:#fff}.champ .cup{font-size:30px;line-height:1}.champ b{font:800 17px/1.1 "Barlow Condensed",sans-serif}.champ small{color:var(--onm)}.champ .av{width:34px;height:34px;box-shadow:0 0 0 2px var(--ball)}.champ .avs .av+.av{margin-left:-8px}
 /* títulos más grandes */
 .rk.big{grid-template-columns:30px minmax(0,1fr) auto;gap:12px;padding:13px 0}
 .rk.big .n{font-size:26px}
@@ -493,9 +499,11 @@ function rDirecto(){
     h+=`<p class="note">Toca un partido para ver sus estadísticas. Toca ☆ para seguir a una pareja.</p>`;
   }
   const nOn=store.get('bandeja-notify',false)&&canNotify()&&Notification.permission==='granted';
-  h+=`<details class="card" style="margin-top:6px"><summary>Favoritos</summary>
+  h+=`<details class="card" style="margin-top:6px"><summary>Favoritos y avisos</summary>
     ${FAV.size?`<div class="seg" style="flex-wrap:wrap">${[...FAV].map(f=>`<button class="chip" data-unfav="${esc(f)}" aria-label="Quitar ${esc(f)}">★ ${esc(titleName(f.replace(/\b\w/g,c=>c.toUpperCase())))} ✕</button>`).join('')}</div>`:'<p class="meta">Aún no sigues a nadie. Toca ☆ junto a una pareja en cualquier partido.</p>'}
-    <p class="meta" style="margin-top:8px">Tus favoritos salen marcados con ★ en los partidos y en la porra.</p></details>
+    <button class="btn ${nOn?'ghost':'ball'}" id="notif" style="width:100%">${nOn?'Avisos activados ✓':'Avisarme de mis favoritos'}</button>
+    ${nOn?'<button class="btn ghost sm" id="ptest" style="width:100%;margin-top:8px">Mandarme un aviso de prueba</button>':''}
+    <p class="meta" style="margin-top:8px">Solo 3 avisos por partido de tus favoritos: cuando empieza, cuando una pareja gana un set y el resultado final. Llegan aunque tengas la app cerrada. En iPhone, abre la app desde la pantalla de inicio.</p></details>
   <details class="card" id="cfgLive"><summary>Ajustes del directo</summary>
     <form id="cfgL"><label for="tid">Código del torneo</label><input id="tid" placeholder="FIP-2026-1234" value="${esc(CFG.id)}" autocomplete="off">
     <p class="meta" style="margin:6px 0 10px">Déjalo vacío: la app elige sola el torneo que se está jugando.</p>
@@ -562,9 +570,11 @@ async function loadDraw(id){
   if(tab==='cuadro')render();
 }
 const DEF_R=['Final','Semifinal','Cuartos','Octavos','Dieciseisavos','Treintaidosavos','Ronda de 128'];
-function bcard(m){const[a,b]=m.teams;
-  const line=t=>`<div class="bl ${t.winner?'w':''}"><span>${t.seed?`<small>${esc(t.seed)}</small> `:''}${esc(short(t))}</span><b>${t.sets.join(' ')}</b></div>`;
-  return`<div class="bm ${m.status==='live'?'lv':''} ${matchFav(m)?'fav':''}" data-match="${esc(m.id)}" data-tid="${esc(m.tid)}" data-year="${esc(m.year)}" data-st="${m.status}">${line(a)}${line(b)}</div>`}
+function bcard(m){const[a,b]=m.teams;const fin=m.status==='finished';
+  const fl=x=>`<span class="bfl">${x.players.map((p,i)=>{const u=flagUrl(fla(x,i)||PFLAG[pk(p)]);return u?`<i style="background-image:url(${u})"></i>`:''}).join('')}</span>`;
+  const line=(x,o)=>`<div class="bl ${x.winner?'w':fin?'lo':''}">${fl(x)}<span class="bn">${x.seed?`<small>${esc(x.seed)}</small>`:''}${esc(short(x))}</span><span class="bsc">${x.sets.map((s,i)=>`<b class="${s>(o.sets[i]??99)?'hi':''}">${s}</b>`).join('')}${x.winner?'<em>✓</em>':''}</span></div>`;
+  const tag=m.status==='live'?'<span class="btag lv">● En juego</span>':m.status==='upcoming'&&m.when?`<span class="btag">${esc(tr(m.when))}</span>`:'';
+  return`<div class="bm ${m.status==='live'?'lv':''} ${fin?'done':''} ${matchFav(m)?'fav':''}" data-match="${esc(m.id)}" data-tid="${esc(m.tid)}" data-year="${esc(m.year)}" data-st="${m.status}">${tag}${line(a,b)}${line(b,a)}</div>`}
 function bracket(rounds){
   const byD=new Map();let D=0;
   for(const r of rounds)for(const m of r.matches){const n=parseInt(String(m.id).replace(/\D/g,''),10);if(!n)continue;const d=Math.floor(Math.log2(n));D=Math.max(D,d);if(!byD.has(d))byD.set(d,{name:r.name,m:new Map()});byD.get(d).m.set(n-2**d,m)}
@@ -577,11 +587,13 @@ function bracket(rounds){
   const opts=[];for(let d=D;d>=1;d--)opts.push(d);
   let h=opts.length>1?`<div class="seg" role="group" aria-label="Desde qué ronda">${opts.map(d=>`<button class="chip sm" data-bstart="${d}" aria-pressed="${d===start}">${d===D&&D>3?'Completo':'Desde '+DEF_R[d].toLowerCase()}</button>`).join('')}</div>`:'';
   const cols=[];for(let d=start;d>=0;d--)cols.push(d);
-  h+=`<div class="brw"><div class="br" style="grid-template-columns:repeat(${cols.length},176px);grid-template-rows:auto repeat(${2**start},58px)">`;
+  const F=byD.get(0)&&byD.get(0).m.get(0);const champ=F&&F.status==='finished'&&F.teams.find(x=>x.winner);
+  h+=`<div class="brw"><div class="br" style="grid-template-columns:repeat(${cols.length},238px)${champ?' 190px':''};grid-template-rows:auto repeat(${2**start},68px)">`;
   cols.forEach((d,ci)=>{const R=byD.get(d);const span=2**(start-d);
     h+=`<div class="bh" style="grid-column:${ci+1};grid-row:1">${esc(R?tr(R.name):DEF_R[d])}</div>`;
     for(let k=0;k<2**d;k++){const m=R&&R.m.get(k);
-      h+=`<div class="bs ${ci===0?'first':''} ${d===0?'last':''}" style="grid-column:${ci+1};grid-row:${2+k*span}/span ${span}">${m?bcard(m):ph(2**d+k)}</div>`}});
+      h+=`<div class="bs ${ci===0?'first':''} ${d===0&&!champ?'last':''} ${k%2?'jb':'jt'} ${d===0?'solo':''}" style="grid-column:${ci+1};grid-row:${2+k*span}/span ${span}">${m?bcard(m):ph(2**d+k)}</div>`}});
+  if(champ){const ci=cols.length+1;h+=`<div class="bh" style="grid-column:${ci};grid-row:1">🏆 Campeones</div><div class="bs last" style="grid-column:${ci};grid-row:2/span ${2**start}"><div class="champ"><div class="cup">🏆</div><span class="avs">${champ.players.map((p,i)=>av(p,fla(champ,i))).join('')}</span><b>${esc(champ.players.map(p=>titleName(surname(p))).join(' / '))}</b><small>${esc(F.teams.map(x=>x.sets.join('')).length?F.teams[0].sets.map((s,i)=>s+'-'+(F.teams[1].sets[i]??'')).join(' '):'')}</small></div></div>`}
   return h+'</div></div>';
 }
 function rCuadro(){
@@ -860,12 +872,7 @@ setInterval(()=>{if(tab==='directo'&&sub==='auto'&&!document.querySelector('deta
 if(pq&&!PG)tab='porra';
 render();startPoll();
 fetch('/ranking.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{if(d&&d.male&&d.male.length&&d.female&&d.female.length){RKD=d;if(tab==='ranking')render()}}).catch(()=>{});
-// Avisos quitados: se borra la suscripción de este móvil y cualquier aviso que quede en pantalla.
-setTimeout(async()=>{try{store.set('bandeja-notify',false);store.set('bandeja-push',false);store.set('bandeja-pin',null);
-  if(!('serviceWorker' in navigator))return;const reg=await navigator.serviceWorker.ready;
-  try{(await reg.getNotifications()).forEach(n=>n.close())}catch(e){}
-  const s=reg.pushManager&&await reg.pushManager.getSubscription();
-  if(s){fetch('/api/push',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'unsub',endpoint:s.endpoint})}).catch(()=>{});await s.unsubscribe()}}catch(e){}},1500);
+if(store.get('bandeja-notify',false)&&canNotify()&&Notification.permission==='granted')setTimeout(()=>pushSub(false),2500);
 fetch('/api/results').then(r=>r.json()).then(d=>{if(d.calendar&&d.calendar.length)CAL=d.calendar;mergeResults(d.results);if(tab==='torneos'||tab==='titulos'||tab==='ranking')render()}).catch(()=>{});
 }
 </script>
