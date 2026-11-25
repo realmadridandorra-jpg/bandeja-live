@@ -182,6 +182,18 @@ select{background:#fff}
 .rkp{font-weight:800;font-size:14px;text-align:right}.rkp small{display:block;font-size:10px;font-weight:500;color:var(--mute)}
 .fbg{position:relative;isolation:isolate;overflow:hidden}.fbg::before{content:"";position:absolute;inset:-8px;background:var(--flg) center/cover no-repeat;filter:blur(3px) saturate(1.2);opacity:.5;z-index:-1;pointer-events:none}
 .pr.fbg{margin:0 -14px;padding-left:14px;padding-right:14px}
+.pintro{text-align:center;color:#fff}.pintro .pbig{font-size:44px}.pintro h2{font-size:26px;margin:4px 0}.pintro p{color:var(--onm);margin:0}
+.phead{display:flex;justify-content:space-between;align-items:center;color:#fff}.phead small{letter-spacing:.2em;color:var(--ball);font-weight:800}.phead h2{font-size:24px;margin:2px 0 0}
+.pcode{background:#ffffff14;border:1px dashed #ffffff55;color:#fff;border-radius:14px;padding:8px 12px;font:900 20px/1.1 inherit;letter-spacing:.18em;display:grid;justify-items:center}.pcode small{font-size:10px;letter-spacing:.02em;font-weight:600;color:var(--onm)}
+.pstand{padding:6px 12px}.psr{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}.psr:last-of-type{border:0}.psr.me .pnm{color:var(--court)}.psr .pos{font-size:18px;text-align:center}.pnm{font-weight:800}.pnm small{font-weight:500;color:var(--mute)}
+.ph{color:#fff;font-size:18px;margin:16px 4px 8px}.pm{padding:12px}.pks{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:stretch;margin-top:8px}.pks em{align-self:center;font-style:normal;font-weight:800;color:var(--mute);font-size:12px}
+.pk{position:relative;display:grid;justify-items:center;gap:6px;padding:10px 6px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);font-weight:700;font-size:13px;line-height:1.15;text-align:center}
+.pk.on{border-color:var(--court);background:linear-gradient(#1f5cff14,#1f5cff26);box-shadow:0 0 0 3px #1f5cff22}.pk i{position:absolute;top:4px;right:8px;font-style:normal;color:var(--court);font-weight:900}.pot{margin:8px 0 0}
+.plist{padding:4px 12px}.pr2{padding:10px 0;border-bottom:1px solid var(--line)}.pr2:last-child{border:0}.pr2 small{display:block;color:var(--mute);margin-top:2px}.pps{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.pp{font-size:12px;padding:4px 8px;border-radius:999px;background:var(--soft,#eef3ff);color:var(--ink)}.pp.ok{background:#dcfce7;color:#166534}.pp.ko{background:#ffe4e6;color:#9f1239}
+.h2h{background:linear-gradient(135deg,#0a1f45,#13297a);color:#fff;border-radius:16px;padding:14px;margin-top:6px}.hbig{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;text-align:center}.hbig b{font-size:40px;font-weight:900}.hbig b.a{color:#7fb0ff}.hbig b.b{color:var(--ball)}.hbig span{font-size:11px;color:#c8d4f5;text-transform:uppercase;letter-spacing:.08em}
+.hcols{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}.hcol{background:#ffffff10;border-radius:12px;padding:10px;display:grid;justify-items:center;gap:6px;text-align:center}.hcol b{font-size:13px}.hst{display:flex;gap:10px;font-size:11px;color:#c8d4f5}.hst em{display:block;font-style:normal;font-size:18px;font-weight:900;color:#fff}
+.hdots{display:flex;gap:4px}.hd{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:10px;font-weight:800}.hd.w{background:#22c55e;color:#fff}.hd.l{background:#ef4444;color:#fff}
+.hh{margin:14px 2px 6px;color:var(--ink)}.hm{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:8px 2px;border-bottom:1px solid var(--line);color:var(--ink)}.hm small{display:block;color:var(--mute)}.hw{font-size:12px;font-weight:700}.hw.a{color:var(--court)}.hw.b{color:#a16207}.hs{grid-column:1/-1;font-size:12px;color:var(--mute)}
 .av.fl{background-size:cover;background-position:center;background-color:#fff}
 .pp{display:flex;align-items:center;gap:8px}
 .avs{display:flex;flex:none;gap:5px}.avs .av{width:26px;height:26px}
@@ -253,7 +265,7 @@ select{background:#fff}
 <button data-tab="directo" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="13" rx="2"/><path d="M8 21h8M9 10v3M15 10v3"/></svg>Directo</button>
 <button data-tab="cuadro"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 5h5v4H3zM3 15h5v4H3zM8 7h3v10H8M11 12h4M15 10h6v4h-6z"/></svg>Cuadro</button>
 <button data-tab="torneos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Torneos</button>
-<button data-tab="titulos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8"/></svg>Títulos</button>
+<button data-tab="porra"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>Porra</button>
 <button data-tab="ranking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 21V13h4v8M10 21V7h4v14M16 21v-5h4v5"/></svg>Ranking</button>
 </nav>
 </div>
@@ -497,16 +509,32 @@ function rDirecto(){
 /* ---------- estadísticas ---------- */
 const SL={'Total points won':'Puntos ganados','Break points converted':'Bolas de break convertidas','Longest streak':'Racha más larga','Aces':'Aces','Double faults':'Dobles faltas','Won on 1st serve':'Ganados con 1.er saque','Won on 2nd serve':'Ganados con 2.º saque','Service games':'Juegos al saque','Won on 1st return':'Ganados al resto (1.er saque)','Won on 2nd return':'Ganados al resto (2.º saque)','Return games':'Juegos al resto','Total won on serve':'Total ganados al saque','Total won on return':'Total ganados al resto','Total points':'Puntos totales'};
 const slab=l=>SL[l]||SL[Object.keys(SL).find(k=>k.toLowerCase()===l.toLowerCase())]||l;
-let STATS=null,SP=0;
+let STATS=null,SP=0,SM='st';const H2HC={};
 async function openStats(el){
   const id=el.dataset.match,tid=el.dataset.tid,year=el.dataset.year;
   if(!tid||!/^[A-Z]{2}\d+/.test(id)){toast('Este partido no tiene estadísticas');return}
   const m=findMatch(id);
-  $('#sheet').classList.add('on');SP=0;STATS={loading:true,m};drawSheet();
+  $('#sheet').classList.add('on');SP=0;SM='st';STATS={loading:true,m};drawSheet();
   try{const r=await fetch(`/api/stats?match=${encodeURIComponent(id)}&tid=${encodeURIComponent(tid)}&year=${encodeURIComponent(year||'2026')}${el.dataset.st==='live'?'&live=1':''}`);STATS={...(await r.json()),m}}catch(e){STATS={status:0,m}}
   drawSheet();
 }
 function findMatch(id){const all=[...((LIVE&&LIVE.matches)||[]),...(DRAW.data?Object.values(DRAW.data.draw).flat().flatMap(r=>r.matches):[])];return all.find(m=>m.id===id)}
+async function loadH2H(m){if(H2HC[m.id])return;H2HC[m.id]={loading:1};
+  const q=t=>encodeURIComponent(t.players.join('|'));
+  try{const r=await fetch(`/api/h2h?a=${q(m.teams[0])}&b=${q(m.teams[1])}`);H2HC[m.id]=await r.json()}catch(e){H2HC[m.id]={error:'No se pudo cargar'}}
+  if(STATS&&STATS.m&&STATS.m.id===m.id&&SM==='h2h')drawSheet()}
+function h2hHTML(m){const H=H2HC[m.id];if(!H||H.loading)return'<p class="empty">Buscando sus partidos de la temporada…</p>';
+  if(H.error)return`<p class="empty">${esc(H.error)}</p>`;
+  const[A,B]=m.teams;const nm=t=>t.players.map(surname).join(' / ');
+  const dots=P=>P.last.map(x=>`<i class="hd ${x.won?'w':'l'}" title="${esc(x.t+' · '+tr(x.r)+' · '+x.score)}">${x.won?'V':'D'}</i>`).join('')||'<small class="meta">Sin partidos</small>';
+  const col=(P,t,c)=>`<div class="hcol"><span class="avs">${t.players.map((p,i)=>av(p,fla(t,i))).join('')}</span><b>${esc(nm(t))}</b>
+    <div class="hst"><span><em>${P.w}</em>V</span><span><em>${P.l}</em>D</span><span><em>${P.titles}</em>🏆</span></div><div class="hdots">${dots(P)}</div></div>`;
+  let h=`<section class="h2h"><div class="hbig"><b class="a">${H.aw}</b><span>Enfrentamientos<br>en 2026</span><b class="b">${H.bw}</b></div>
+    <div class="hcols">${col(H.a,A)}${col(H.b,B)}</div></section>`;
+  h+=H.meetings.length?`<h4 class="hh">Sus partidos este año</h4>`+H.meetings.map(x=>`<div class="hm"><span><b>${esc(x.t)}</b><small>${esc(tr(x.r))}</small></span><span class="hw ${x.won?'a':'b'}">Ganan ${esc(x.won?nm(A):nm(B))}</span><span class="hs">${esc(x.score)}</span></div>`).join('')
+    :'<p class="meta" style="margin:10px 2px">No se han enfrentado todavía en el cuadro final de esta temporada.</p>';
+  h+=`<p class="note" style="margin-top:10px">Balance (victorias, derrotas y títulos) y últimos 5 partidos de cada pareja en el cuadro final de los ${H.tournaments} torneos de 2026 guardados.</p>`;
+  return h}
 function drawSheet(){
   const s=STATS,m=s.m;
   const names=m?m.teams.map(t=>t.players.map(esc).join(' / ')):['',''];
@@ -514,6 +542,8 @@ function drawSheet(){
   ${m?`<div class="seg" style="margin:0 0 6px">${m.status!=='finished'?`<button class="chip" id="pinM" aria-pressed="${PIN===m.id}">📌 ${PIN===m.id?'En tu pantalla de bloqueo':'Ver en pantalla de bloqueo'}</button>`:''}<button class="chip" id="shareM">↗ Compartir</button></div>`:''}
   <div class="sx" style="border:0"><span style="font-size:12px;color:var(--court);font-weight:700">●</span><span class="l" style="color:var(--ink);text-align:left">${names[0]}</span><span></span></div>
   <div class="sx" style="border:0;padding-top:0"><span style="font-size:12px;color:var(--ball);font-weight:700">●</span><span class="l" style="color:var(--ink);text-align:left">${names[1]}</span><span></span></div>`;
+  if(m)h+=`<div class="seg" role="tablist" style="margin:6px 0 4px"><button class="chip" data-sm="st" aria-pressed="${SM==='st'}">📊 Estadísticas</button><button class="chip" data-sm="h2h" aria-pressed="${SM==='h2h'}">⚔️ Cara a cara</button></div>`;
+  if(m&&SM==='h2h'){h+=h2hHTML(m);$('#sheetBody').innerHTML=h;return}
   if(s.loading)h+='<p class="empty">Cargando estadísticas…</p>';
   else if(!s.panes||!s.panes.length)h+='<p class="empty">Las estadísticas aún no están disponibles para este partido.</p>';
   else{
@@ -523,7 +553,7 @@ function drawSheet(){
   }
   $('#sheetBody').innerHTML=h;
 }
-$('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet'||e.target.id==='closeSheet')$('#sheet').classList.remove('on');const p=e.target.closest('[data-pane]');if(p){SP=+p.dataset.pane;drawSheet()}if(e.target.closest('#pinM')&&STATS.m)pinMatch(STATS.m);if(e.target.closest('#shareM')&&STATS.m)shareMatch(STATS.m)});
+$('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet'||e.target.id==='closeSheet')$('#sheet').classList.remove('on');const p=e.target.closest('[data-pane]');if(p){SP=+p.dataset.pane;drawSheet()}const sm=e.target.closest('[data-sm]');if(sm){SM=sm.dataset.sm;if(SM==='h2h'&&STATS.m)loadH2H(STATS.m);drawSheet()}if(e.target.closest('#pinM')&&STATS.m)pinMatch(STATS.m);if(e.target.closest('#shareM')&&STATS.m)shareMatch(STATS.m)});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#sheet').classList.remove('on')});
 
 /* ---------- cuadro ---------- */
@@ -686,13 +716,15 @@ function mountMaps(){
 }
 
 /* ---------- ranking ---------- */
-let RK={g:store.get('bandeja-rkg','male'),data:null,err:''};
+let RK={g:store.get('bandeja-rkg','male'),v:'fip',data:null,err:''};
 async function loadRanking(){try{const d=await (await fetch('/api/ranking')).json();if(d.error)RK.err=d.error;else RK.data=d}catch(e){RK.err='No se pudo cargar el ranking.'}if(tab==='ranking')render()}
 let RKD={"date":"23/11/2026","male":[[1,"Arturo Coello","ESP",20211,0],[1,"Agustin Tapia","ARG",20211,0],[3,"Alejandro Galan","ESP",14033,0],[3,"Federico Chingotto","ARG",14033,0],[5,"Juan Lebron","ESP",8560,0],[6,"Leandro Augsburger","ARG",8483,0],[7,"Franco Stupaczuk","ARG",6180,0],[8,"Jon Sanz","ESP",5243,1],[9,"Francisco Navarro","ESP",5241,-1],[10,"Martin Di Nenno","ARG",4813,0],[11,"Miguel Yanguas","ESP",4796,0],[12,"Francisco Guerrero","ESP",4391,0],[13,"Jeronimo Gonzalez","ESP",3813,0],[14,"Juan Tello","ARG",3803,0],[15,"Jorge Nieto","ESP",3691,0],[16,"Maximiliano Arce Simo","ARG",3600,1],[17,"Gonzalo Alfonso","ARG",3598,-1],[18,"Javier Leal","ESP",3488,0],[19,"Valentino Gabriel Libaak","ARG",3358,1],[20,"Lucas Campagnolo","BRA",3346,-1],[21,"Eduardo Alonso","ESP",3328,0],[22,"Lucas Bergamini","BRA",3101,1],[23,"Aimar Goñi Lacabe","ESP",2920,1],[24,"Jairo Bautista","ESP",2891,-2],[25,"Javier Garrido","ESP",2683,0],[26,"Javier Garcia","ESP",2448,0],[27,"Juanlu Esbri","ESP",2380,0],[28,"Inigo Jofre","UAE",2368,0],[29,"Carlos Daniel Gutierrez","ARG",2253,0],[30,"Jose Jimenez Casas","ESP",2158,0]],"female":[[1,"Gemma Triay Pons","ESP",15831,0],[1,"Delfina Brea Senesi","ARG",15831,0],[3,"Beatriz Gonzalez Fernandez","ESP",13926,0],[4,"Ariana Sanchez Fallada","ESP",12333,0],[5,"Claudia Fernandez Sanchez","ESP",12306,0],[6,"Andrea Ustero Prieto","ESP",12096,0],[7,"Paula Josemaria Martin","ESP",11223,0],[8,"Martina Calvo Santamaria","ESP",8636,0],[9,"Claudia Jensen","ARG",5548,1],[10,"Sofia Araujo","POR",5423,-1],[11,"Marta Ortega Gallego","ESP",4693,0],[12,"Tamara Icardo Alcorisa","ESP",4618,0],[13,"Alejandra Alonso De Villa","ESP",3966,0],[14,"Marina Guinart España","ESP",3936,0],[15,"Veronica Virseda","ESP",3296,0],[16,"Aranzazu Osoro Ulrich","ARG",3273,1],[17,"Alejandra Salazar Bengoechea","ESP",3266,-1],[18,"Beatriz Caldera Sanchez","ESP",3233,0],[19,"Carmen Goenaga Garcia","ESP",3083,0],[20,"Raquel Eugenio Barrera","ESP",2918,0],[21,"Nuria Rodriguez","ESP",2836,1],[22,"Giulia Dal Pozzo","ITA",2820,1],[23,"Victoria Iglesias Segador","ESP",2696,-2],[24,"Lorena Rufo Ortiz","ESP",2583,1],[25,"Martina Fassio Goyeneche","ARG",2498,-1],[26,"Jimena Velasco Postiguillo","ESP",2383,1],[27,"Patricia Llaguno Zielinski","ESP",2368,-1],[28,"Jessica Castello Lopez","ESP",2213,3],[29,"Lucia Sainz Pelegri","ESP",2188,-1],[30,"Marta Barrera De La Fuente","ESP",2146,-1]]};
 function rRanking(){
+  const top2=`<div class="seg" role="tablist" aria-label="Ranking"><button class="chip" data-rkv="fip" aria-pressed="${RK.v!=='tit'}">🏅 Ranking FIP</button><button class="chip" data-rkv="tit" aria-pressed="${RK.v==='tit'}">🏆 Títulos 2026</button></div>`;
+  if(RK.v==='tit'){rTitulos();view.insertAdjacentHTML('afterbegin',top2);return}
   const L=RKD[RK.g]||[],top=L[0]?L[0][3]:1;
   const podium=[[L[1],2],[L[0],1],[L[2],3]].filter(z=>z[0]).map(([x,k])=>`<div class="pod p${k}">${av(x[1],x[2])}<b>${esc(x[1].split(' ').slice(0,2).join(' '))}</b><small>${x[3].toLocaleString('es-ES')} pts</small><i>${x[0]}</i></div>`).join('');
-  view.innerHTML=`<div class="seg" role="group" aria-label="Categoría"><button class="chip" data-rkg="male" aria-pressed="${RK.g==='male'}">Masculino</button><button class="chip" data-rkg="female" aria-pressed="${RK.g==='female'}">Femenino</button></div>
+  view.innerHTML=top2+`<div class="seg" role="group" aria-label="Categoría"><button class="chip" data-rkg="male" aria-pressed="${RK.g==='male'}">Masculino</button><button class="chip" data-rkg="female" aria-pressed="${RK.g==='female'}">Femenino</button></div>
   <section class="card glass podw">${podium}</section>
   <section class="card rkl">${L.map(x=>{const[pos,name,c,pts,mvv]=x;const fav=FAV.has(norm(surname(name)));
     const mv=mvv>0?`<i class="mv up">▲${mvv}</i>`:mvv<0?`<i class="mv dn">▼${-mvv}</i>`:'<i class="mv">–</i>';
@@ -700,15 +732,73 @@ function rRanking(){
   <p class="note">Top 30 del ranking FIP del ${RKD.date}. Toca ☆ para seguir a un jugador.</p>`;
 }
 
+/* ---------- porra ---------- */
+let PG=store.get('por3-porra',null),PD=null,PDT=0,PERR='';
+const pq=new URLSearchParams(location.search).get('porra');
+async function porraLoad(force){if(!PG)return;if(!force&&Date.now()-PDT<30000)return;PDT=Date.now();
+  try{const r=await fetch('/api/porra?code='+encodeURIComponent(PG.code),{cache:'no-store'});const d=await r.json();if(!r.ok)throw new Error(d.error||r.status);PD=d;PDT=Date.now();PERR=''}catch(e){PERR=String(e.message||e);PDT=Date.now()}
+  if(tab==='porra')render()}
+async function porraPost(o){const r=await fetch('/api/porra',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(o)});const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Error');return d}
+function porraScores(){const S={};for(const u of Object.keys(PD.members))S[u]={u,n:PD.members[u],p:0,t:0};
+  for(const [mid,pk] of Object.entries(PD.picks)){const w=PD.results[mid];if(w==null)continue;for(const [u,v] of Object.entries(pk)){if(!S[u])continue;S[u].t++;if(v===w)S[u].p++}}
+  return Object.values(S).sort((a,b)=>b.p-a.p||a.t-b.t||a.n.localeCompare(b.n))}
+function rPorra(){
+  if(!PG){view.innerHTML=`<section class="card glass pintro"><div class="pbig">🎯</div><h2>Vuestra porra de pádel</h2>
+    <p>Antes de cada partido, cada uno elige qué pareja gana. <b>1 punto por acierto.</b> La app apunta los resultados sola y lleva la clasificación.</p></section>
+    <section class="card"><h3>Crear una porra nueva</h3><label for="pn">Tu nombre</label><input id="pn" maxlength="20" placeholder="Ej.: Adrián" value="${esc(store.get('por3-name',''))}">
+    <button class="btn ball" id="pcreate" style="width:100%;margin-top:10px">Crear porra</button></section>
+    <section class="card"><h3>Unirme con un código</h3><label for="pc">Código que te han pasado</label><input id="pc" maxlength="8" placeholder="Ej.: K7RTP" value="${esc(pq||'')}" style="text-transform:uppercase;letter-spacing:.2em;font-weight:800">
+    <label for="pn2" style="margin-top:8px">Tu nombre</label><input id="pn2" maxlength="20" placeholder="Ej.: Lucía" value="${esc(store.get('por3-name',''))}">
+    <button class="btn" id="pjoin" style="width:100%;margin-top:10px">Unirme</button></section>`;return}
+  porraLoad();
+  if(!PD){view.innerHTML=PERR?`<div class="card empty">${esc(PERR)}<br><button class="btn ghost sm" id="pleave" style="margin-top:10px">Salir de esta porra</button></div>`:'<div class="card empty">Cargando la porra…</div>';return}
+  const me=PG.uid,sc=porraScores(),max=Math.max(1,...sc.map(x=>x.p));
+  let h=`<section class="card glass phead"><div><small>PORRA</small><h2>${esc(PD.title||'Nuestra porra')}</h2></div><button class="pcode" id="pshare" aria-label="Compartir el código">${esc(PD.code)}<small>Compartir ↗</small></button></section>`;
+  h+=`<section class="card pstand">${sc.map((x,i)=>`<div class="psr ${x.u===me?'me':''}"><b class="pos ${i===0&&x.p>0?'top':''}">${i===0&&x.p>0?'👑':i+1}</b><span class="pnm">${esc(x.n)}${x.u===me?' <small>(tú)</small>':''}<span class="rkb"><i style="width:${Math.max(4,x.p/max*100)}%"></i></span></span><span class="rkp">${x.p}<small>${x.p} de ${x.t}</small></span></div>`).join('')}
+    ${sc.length<2?'<p class="meta" style="margin:8px 0 0">Comparte el código para que se una alguien más.</p>':''}</section>`;
+  const ms=((LIVE&&LIVE.matches)||[]);
+  const up=ms.filter(m=>m.status==='upcoming'&&m.teams.every(t=>t.players.length));
+  const others=u=>Object.entries(PD.picks[u]||{});
+  h+=`<h3 class="ph">Elige quién gana ${DAY?'':'hoy'}</h3>`;
+  h+=up.length?up.map(m=>{const mine=(PD.picks[m.id]||{})[me];const ot=others(m.id).filter(([u])=>u!==me).map(([u])=>esc(PD.members[u]||'')).filter(Boolean);
+    const side=(t,i)=>`<button class="pk ${mine===i?'on':''}" data-pk="${esc(m.id)}|${i}"><span class="avs">${t.players.map((p,j)=>av(p,fla(t,j))).join('')}</span><span>${esc(t.players.map(surname).join(' / '))}</span>${mine===i?'<i>✓</i>':''}</button>`;
+    return`<div class="card pm"><div class="meta"><span>${esc(tr(m.round))}</span><span>${esc(tr(m.when||''))}</span><span>${esc(tr(m.court||''))}</span></div><div class="pks">${side(m.teams[0],0)}<em>vs</em>${side(m.teams[1],1)}</div>${ot.length?`<p class="meta pot">✓ Ya ha elegido: ${ot.join(', ')} (se verá cuando empiece)</p>`:''}</div>`}).join('')
+    :`<div class="card empty">No quedan partidos por empezar ${DAY?'ese día':'hoy'}. Para apostar partidos de otro día, cámbialo en Directo.</div>`;
+  const done=Object.keys(PD.picks).filter(mid=>!up.some(m=>m.id===mid)).sort((a,b)=>((PD.meta[b]||{}).d||0)-((PD.meta[a]||{}).d||0)).slice(0,25);
+  if(done.length){h+=`<h3 class="ph">Vuestras apuestas</h3><section class="card plist">`+done.map(mid=>{const x=PD.meta[mid]||{},w=PD.results[mid],lm=ms.find(m=>m.id===mid);
+      const st=w!=null?'':lm&&lm.status==='live'?'<span class="live">En juego</span>':'<span class="meta">Pendiente</span>';
+      const lab=i=>i===0?x.a:x.b;
+      return`<div class="pr2"><div><b>${esc(x.a||'')} <span class="meta">vs</span> ${esc(x.b||'')}</b><small>${esc(x.r||'')}${w!=null?` · Ganan <b>${esc(lab(w)||'')}</b>`:''}</small>${st}</div><div class="pps">${Object.entries(PD.picks[mid]).map(([u,v])=>`<span class="pp ${w==null?'':v===w?'ok':'ko'}">${w==null?'⏳':v===w?'✓':'✗'} ${esc(PD.members[u]||'?')}: ${esc(lab(v)||'')}</span>`).join('')}</div></div>`}).join('')+'</section>'}
+  h+=`<p class="note">Solo se puede elegir antes de que empiece el partido. Los resultados se apuntan solos.<br><button class="btn ghost sm" id="pleave" style="margin-top:8px">Salir de esta porra en este móvil</button></p>`;
+  view.innerHTML=h;
+}
+async function porraClick(b){
+  try{
+    if(b.id==='pcreate'||b.id==='pjoin'){const name=($('#'+(b.id==='pcreate'?'pn':'pn2')).value||'').trim();if(!name){toast('Escribe tu nombre');return}store.set('por3-name',name);
+      const d=b.id==='pcreate'?await porraPost({action:'create',name}):await porraPost({action:'join',code:($('#pc').value||'').trim(),name});
+      PG={code:d.code,uid:d.uid,name};store.set('por3-porra',PG);PD=null;PDT=0;toast(b.id==='pcreate'?'¡Porra creada! Comparte el código':'¡Ya estás dentro!');await porraLoad(true);return}
+    if(b.id==='pshare'){const url=location.origin+'/?porra='+PD.code;const text=`¡Únete a mi porra de pádel en Por3! Código: ${PD.code}`;
+      try{if(navigator.share){await navigator.share({title:'Por3 · Porra',text,url});return}}catch(e){return}
+      try{await navigator.clipboard.writeText(text+' '+url);toast('Copiado, ya puedes pegarlo')}catch(e){toast('Código: '+PD.code)}return}
+    if(b.id==='pleave'){if(!confirmLeave())return;PG=null;PD=null;PDT=0;PERR='';store.set('por3-porra',null);render();return}
+    if(b.dataset.pk){const[mid,i]=b.dataset.pk.split('|');const m=((LIVE&&LIVE.matches)||[]).find(x=>x.id===mid);if(!m)return;
+      const nm=t=>t.players.map(surname).join(' / ');
+      (PD.picks[mid]=PD.picks[mid]||{})[PG.uid]=+i;PD.meta[mid]=PD.meta[mid]||{a:nm(m.teams[0]),b:nm(m.teams[1]),r:tr(m.round),d:Date.now()};render();
+      await porraPost({action:'pick',code:PG.code,uid:PG.uid,mid,pick:+i,meta:{a:nm(m.teams[0]),b:nm(m.teams[1]),r:tr(m.round),w:m.when||''}});toast('Apuntado ✓');porraLoad(true)}
+  }catch(e){toast(String(e.message||e));porraLoad(true)}}
+let LEAVE=0;const confirmLeave=()=>{if(Date.now()-LEAVE<4000)return true;LEAVE=Date.now();toast('Pulsa otra vez para salir');return false};
+
 /* ---------- pantalla de bloqueo y compartir ---------- */
 let PIN=store.get('bandeja-pin',null),PINK='';
 const sname=t=>t.players.map(surname).join('/');
-function pinText(m){const[a,b]=m.teams;const sets=a.sets.map((s,i)=>`${s}-${b.sets[i]??''}`).join('  ')||'0-0';
-  const pt=m.status==='live'&&(a.point||b.point)?` · Juego ${a.point||0}-${b.point||0}`:'';
-  const srv=m.status==='live'?(a.serving?' (saca '+surname(a.players[0])+'…)':''):'';
-  return{title:`${sname(a)}  ${sets}  ${sname(b)}`,body:(m.status==='finished'?'Final':m.status==='live'?'En juego':'Próximo · '+tr(m.when||''))+pt+' · '+tr(m.court||'')}}
+const BD=s=>String(s).replace(/[0-9]/g,d=>String.fromCodePoint(0x1D7EC+Number(d)));
+const UP=t=>t.players.map(p=>surname(p).toUpperCase()).join(' / ');
+function pinText(m){const[a,b]=m.teams;
+  const row=T=>`${T.serving&&m.status==='live'?'◉':'○'} ${UP(T)}   ${T.sets.map(BD).join(' ┃ ')||BD(0)}${m.status==='live'&&T.point?`  ‹${T.point}›`:''}`;
+  const st=m.status==='live'?'⚡ EN JUEGO':m.status==='finished'?'🏁 FINAL':'⏱ PRÓXIMO · '+tr(m.when||'');
+  return{title:`${st} · ${String(tr(m.court||'')).toUpperCase()}`,body:row(a)+'\n'+row(b)}}
 async function showPin(m,final){if(!SWR||!SWR.showNotification||Notification.permission!=='granted')return;const x=pinText(m);
-  try{await SWR.showNotification((final?'🏁 ':'🎾 ')+x.title,{body:x.body,tag:'por3-pin',renotify:!!final,silent:!final,requireInteraction:!final,icon:'/icon-192.png',badge:'/icon-192.png',data:{url:'/'}})}catch(e){}}
+  try{await SWR.showNotification(x.title,{body:x.body,vibrate:final?[90,50,90]:undefined,tag:'por3-pin',renotify:!!final,silent:!final,requireInteraction:!final,icon:'/icon-192.png',badge:'/icon-192.png',data:{url:'/'}})}catch(e){}}
 async function pinMatch(m){
   if(!canNotify()){toast('Este móvil no permite avisos aquí. En iPhone, añade la app a la pantalla de inicio primero.');return}
   if(PIN===m.id){PIN=null;store.set('bandeja-pin',null);try{(await SWR.getNotifications({tag:'por3-pin'})).forEach(n=>n.close())}catch(e){}toast('Quitado de la pantalla de bloqueo');drawSheet();return}
@@ -723,7 +813,7 @@ async function shareMatch(m){const x=pinText(m);const text=`${x.title}\n${x.body
   try{if(navigator.share){await navigator.share({title:'Por3',text,url:location.origin});return}await navigator.clipboard.writeText(text+' '+location.origin);toast('Copiado, ya puedes pegarlo')}catch(e){}}
 
 /* ---------- navegación ---------- */
-const TAB={directo:['En directo','Resultados que se actualizan solos',rDirecto],cuadro:['Cuadro','Ronda a ronda, con estadísticas',rCuadro],torneos:['Torneos','Calendario Premier Padel 2026',rTorneos],titulos:['Títulos','Quién está ganando la temporada',rTitulos],ranking:['Ranking FIP','Los 30 mejores del mundo',rRanking]};
+const TAB={directo:['En directo','Resultados que se actualizan solos',rDirecto],cuadro:['Cuadro','Ronda a ronda, con estadísticas',rCuadro],torneos:['Torneos','Calendario Premier Padel 2026',rTorneos],titulos:['Títulos','Quién está ganando la temporada',rTitulos],ranking:['Ranking','El top 30 FIP y los títulos de 2026',rRanking],porra:['La porra','¿Quién acierta más ganadores?',rPorra]};
 function render(){const[a,b,f]=TAB[tab];$('#title').textContent=a;$('#sub').textContent=b;
   document.querySelectorAll('nav button').forEach(x=>x.dataset.tab===tab?x.setAttribute('aria-current','page'):x.removeAttribute('aria-current'));f();mountMaps()}
 const go=t=>{tab=t;render();scrollTo(0,0)};
@@ -738,6 +828,7 @@ document.addEventListener('click',e=>{
   if(b.dataset.day){const n=b.dataset.day;const act=(LIVE.days||[]).find(d=>d.active);DAY=act&&String(act.n)===n?null:n;LIVE={...LIVE,matches:[]};PREV={};showAll=false;render();startPoll();return}
   if(b.dataset.unfav){FAV.delete(b.dataset.unfav);saveFav();render();return}
   if(b.id==='notif'){askNotify();return}
+  if(['pcreate','pjoin','pshare','pleave'].includes(b.id)||b.dataset.pk){porraClick(b);return}
   if(b.id==='ptest'){pushTest();return}
   if(b.dataset.pt){point(+b.dataset.pt);return}
   if(b.dataset.sub){sub=b.dataset.sub;render();scrollTo(0,0);return}
@@ -745,6 +836,7 @@ document.addEventListener('click',e=>{
   if(b.id==='more'){showAll=!showAll;render();return}
   if(b.dataset.tf){tf=b.dataset.tf;render();return}
   if(b.dataset.tt){TT=b.dataset.tt;render();scrollTo(0,0);return}
+  if(b.dataset.rkv){RK.v=b.dataset.rkv;render();return}
   if(b.dataset.rkg){RK.g=b.dataset.rkg;store.set('bandeja-rkg',RK.g);render();return}
   if(b.dataset.tg){tg=b.dataset.tg;render();return}
   if(b.dataset.g){DRAW.g=b.dataset.g;DRAW.start=null;render();return}
@@ -764,10 +856,11 @@ document.addEventListener('submit',e=>{e.preventDefault();const v=id=>document.g
 setInterval(()=>{if(tab==='directo'&&sub==='auto'&&!document.querySelector('details[open]')&&!document.activeElement.matches('input,select'))render()},5000);
 
 /* ---------- arranque ---------- */
+if(pq&&!PG)tab='porra';
 render();startPoll();
 fetch('/ranking.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{if(d&&d.male&&d.male.length&&d.female&&d.female.length){RKD=d;if(tab==='ranking')render()}}).catch(()=>{});
 if(store.get('bandeja-notify',false)&&canNotify()&&Notification.permission==='granted')setTimeout(()=>pushSub(false),2500);
-fetch('/api/results').then(r=>r.json()).then(d=>{if(d.calendar&&d.calendar.length)CAL=d.calendar;mergeResults(d.results);if(tab==='torneos'||tab==='titulos')render()}).catch(()=>{});
+fetch('/api/results').then(r=>r.json()).then(d=>{if(d.calendar&&d.calendar.length)CAL=d.calendar;mergeResults(d.results);if(tab==='torneos'||tab==='titulos'||tab==='ranking')render()}).catch(()=>{});
 }
 </script>
 </body>
