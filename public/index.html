@@ -334,7 +334,7 @@ const tStatus=t=>TODAY<t.start?'prox':TODAY>t.end?'fin':'live';
 
 /* ---------- estado ---------- */
 let tab='directo',sub='auto',CFG=store.get('bandeja-live-cfg',{id:'',demo:false});
-let FAV=new Set(store.get('bandeja-fav',[]));const saveFav=()=>store.set('bandeja-fav',[...FAV]);
+let FAV=new Set(store.get('bandeja-fav',[]));const saveFav=()=>{store.set('bandeja-fav',[...FAV]);pushSync()};
 let LIVE=null,LERR='',LAT=0,PREV={},PST={},FLASH=new Set(),loading=false,showAll=false,DAY=null;
 let TT='cal',DRAW={id:null,data:null,err:'',g:'MD',start:null},tf='todos',tg='m',VM=store.get('bandeja-vm','pista');
 const ISO={ESP:'ES',ARG:'AR',ITA:'IT',FRA:'FR',POR:'PT',BRA:'BR',MEX:'MX',NED:'NL',GBR:'GB',BEL:'BE',SWE:'SE',CHI:'CL',URU:'UY',PAR:'PY',GER:'DE',UAE:'AE',QAT:'QA',USA:'US',DEN:'DK',FIN:'FI',EGY:'EG',KUW:'KW',SUI:'CH',AUT:'AT',RSA:'ZA',JPN:'JP',POL:'PL',CZE:'CZ',AUS:'AU',IRL:'IE',NOR:'NO',ECU:'EC',VEN:'VE',COL:'CO',PER:'PE',LTU:'LT',EST:'EE',UKR:'UA',CAN:'CA',KSA:'SA',BUL:'BG',ROU:'RO',HUN:'HU',CRO:'HR',SLO:'SI',LAT:'LV',MAR:'MA',TUN:'TN',IND:'IN',CHN:'CN',KOR:'KR'};
@@ -357,13 +357,31 @@ if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').then
 const canNotify=()=>'Notification' in window;
 function notify(title,body){
   toast(title+' · '+body);
+  if(store.get('bandeja-push',false))return;
   if(!canNotify()||Notification.permission!=='granted'||!store.get('bandeja-notify',false))return;
   try{if(SWR&&SWR.showNotification)SWR.showNotification(title,{body,icon:'/icon-192.png',badge:'/icon-192.png',tag:title+body});else new Notification(title,{body,icon:'/icon-192.png'})}catch(e){}
 }
+/* ---------- avisos con la app cerrada (Web Push) ---------- */
+const b64u=s=>{const p='='.repeat((4-s.length%4)%4);const r=atob((s+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(r,c=>c.charCodeAt(0))};
+async function pushSub(loud){
+  try{
+    if(!('serviceWorker' in navigator)||!('PushManager' in window)){if(loud)toast('En iPhone, añade la app a la pantalla de inicio y ábrela desde ahí para recibir avisos con la app cerrada.');return false}
+    const reg=await navigator.serviceWorker.ready;
+    let sub=await reg.pushManager.getSubscription();
+    if(!sub){const {publicKey}=await (await fetch('/api/push?vapid=1')).json();sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:b64u(publicKey)})}
+    const r=await fetch('/api/push',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'sub',sub:sub.toJSON(),favs:[...FAV]})});
+    if(!r.ok)throw new Error(r.status);
+    store.set('bandeja-push',true);return true;
+  }catch(e){if(loud)toast('No se pudieron activar los avisos con la app cerrada');return false}
+}
+let PSYNC=0;const pushSync=()=>{if(!store.get('bandeja-push',false))return;clearTimeout(PSYNC);PSYNC=setTimeout(()=>pushSub(false),800)};
+async function pushTest(){try{const reg=await navigator.serviceWorker.ready;const s=await reg.pushManager.getSubscription();if(!s){toast('Primero activa los avisos');return}
+  const r=await (await fetch('/api/push',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'test',endpoint:s.endpoint})})).json();
+  toast(r.result==='ok'?'Aviso de prueba enviado 📲':'No se pudo enviar la prueba')}catch(e){toast('No se pudo enviar la prueba')}}
 async function askNotify(){
   if(!canNotify()){toast('Este navegador no permite avisos. En iPhone, añade la app a la pantalla de inicio primero.');return}
   const p=await Notification.requestPermission();
-  store.set('bandeja-notify',p==='granted');render();
+  store.set('bandeja-notify',p==='granted');if(p==='granted')await pushSub(true);render();
   toast(p==='granted'?'Avisos activados para tus favoritos':'No se han activado los avisos');
 }
 
@@ -465,7 +483,8 @@ function rDirecto(){
   h+=`<details class="card" style="margin-top:6px"><summary>Favoritos y avisos</summary>
     ${FAV.size?`<div class="seg" style="flex-wrap:wrap">${[...FAV].map(f=>`<button class="chip" data-unfav="${esc(f)}" aria-label="Quitar ${esc(f)}">★ ${esc(titleName(f.replace(/\b\w/g,c=>c.toUpperCase())))} ✕</button>`).join('')}</div>`:'<p class="meta">Aún no sigues a nadie. Toca ☆ junto a una pareja en cualquier partido.</p>'}
     <button class="btn ${nOn?'ghost':'ball'}" id="notif" style="width:100%">${nOn?'Avisos activados ✓':'Avisarme cuando jueguen mis favoritos'}</button>
-    <p class="meta" style="margin-top:8px">Avisa cuando empieza y cuando termina un partido de tus favoritos, mientras la app esté abierta o en segundo plano.</p></details>
+    ${nOn?'<button class="btn ghost sm" id="ptest" style="width:100%;margin-top:8px">Mandarme un aviso de prueba</button>':''}
+    <p class="meta" style="margin-top:8px">Te avisa aunque tengas la app cerrada: cuando empieza un partido de tus favoritos, al acabar cada set y el resultado final. En iPhone, abre la app desde la pantalla de inicio.</p></details>
   <details class="card" id="cfgLive"><summary>Ajustes del directo</summary>
     <form id="cfgL"><label for="tid">Código del torneo</label><input id="tid" placeholder="FIP-2026-1234" value="${esc(CFG.id)}" autocomplete="off">
     <p class="meta" style="margin:6px 0 10px">Déjalo vacío: la app elige sola el torneo que se está jugando.</p>
@@ -669,7 +688,7 @@ function mountMaps(){
 /* ---------- ranking ---------- */
 let RK={g:store.get('bandeja-rkg','male'),data:null,err:''};
 async function loadRanking(){try{const d=await (await fetch('/api/ranking')).json();if(d.error)RK.err=d.error;else RK.data=d}catch(e){RK.err='No se pudo cargar el ranking.'}if(tab==='ranking')render()}
-const RKD={"date":"23/11/2026","male":[[1,"Arturo Coello","ESP",20211,0],[1,"Agustin Tapia","ARG",20211,0],[3,"Alejandro Galan","ESP",14033,0],[3,"Federico Chingotto","ARG",14033,0],[5,"Juan Lebron","ESP",8560,0],[6,"Leandro Augsburger","ARG",8483,0],[7,"Franco Stupaczuk","ARG",6180,0],[8,"Jon Sanz","ESP",5243,1],[9,"Francisco Navarro","ESP",5241,-1],[10,"Martin Di Nenno","ARG",4813,0],[11,"Miguel Yanguas","ESP",4796,0],[12,"Francisco Guerrero","ESP",4391,0],[13,"Jeronimo Gonzalez","ESP",3813,0],[14,"Juan Tello","ARG",3803,0],[15,"Jorge Nieto","ESP",3691,0],[16,"Maximiliano Arce Simo","ARG",3600,1],[17,"Gonzalo Alfonso","ARG",3598,-1],[18,"Javier Leal","ESP",3488,0],[19,"Valentino Gabriel Libaak","ARG",3358,1],[20,"Lucas Campagnolo","BRA",3346,-1],[21,"Eduardo Alonso","ESP",3328,0],[22,"Lucas Bergamini","BRA",3101,1],[23,"Aimar Goñi Lacabe","ESP",2920,1],[24,"Jairo Bautista","ESP",2891,-2],[25,"Javier Garrido","ESP",2683,0],[26,"Javier Garcia","ESP",2448,0],[27,"Juanlu Esbri","ESP",2380,0],[28,"Inigo Jofre","UAE",2368,0],[29,"Carlos Daniel Gutierrez","ARG",2253,0],[30,"Jose Jimenez Casas","ESP",2158,0]],"female":[[1,"Gemma Triay Pons","ESP",15831,0],[1,"Delfina Brea Senesi","ARG",15831,0],[3,"Beatriz Gonzalez Fernandez","ESP",13926,0],[4,"Ariana Sanchez Fallada","ESP",12333,0],[5,"Claudia Fernandez Sanchez","ESP",12306,0],[6,"Andrea Ustero Prieto","ESP",12096,0],[7,"Paula Josemaria Martin","ESP",11223,0],[8,"Martina Calvo Santamaria","ESP",8636,0],[9,"Claudia Jensen","ARG",5548,1],[10,"Sofia Araujo","POR",5423,-1],[11,"Marta Ortega Gallego","ESP",4693,0],[12,"Tamara Icardo Alcorisa","ESP",4618,0],[13,"Alejandra Alonso De Villa","ESP",3966,0],[14,"Marina Guinart España","ESP",3936,0],[15,"Veronica Virseda","ESP",3296,0],[16,"Aranzazu Osoro Ulrich","ARG",3273,1],[17,"Alejandra Salazar Bengoechea","ESP",3266,-1],[18,"Beatriz Caldera Sanchez","ESP",3233,0],[19,"Carmen Goenaga Garcia","ESP",3083,0],[20,"Raquel Eugenio Barrera","ESP",2918,0],[21,"Nuria Rodriguez","ESP",2836,1],[22,"Giulia Dal Pozzo","ITA",2820,1],[23,"Victoria Iglesias Segador","ESP",2696,-2],[24,"Lorena Rufo Ortiz","ESP",2583,1],[25,"Martina Fassio Goyeneche","ARG",2498,-1],[26,"Jimena Velasco Postiguillo","ESP",2383,1],[27,"Patricia Llaguno Zielinski","ESP",2368,-1],[28,"Jessica Castello Lopez","ESP",2213,3],[29,"Lucia Sainz Pelegri","ESP",2188,-1],[30,"Marta Barrera De La Fuente","ESP",2146,-1]]};
+let RKD={"date":"23/11/2026","male":[[1,"Arturo Coello","ESP",20211,0],[1,"Agustin Tapia","ARG",20211,0],[3,"Alejandro Galan","ESP",14033,0],[3,"Federico Chingotto","ARG",14033,0],[5,"Juan Lebron","ESP",8560,0],[6,"Leandro Augsburger","ARG",8483,0],[7,"Franco Stupaczuk","ARG",6180,0],[8,"Jon Sanz","ESP",5243,1],[9,"Francisco Navarro","ESP",5241,-1],[10,"Martin Di Nenno","ARG",4813,0],[11,"Miguel Yanguas","ESP",4796,0],[12,"Francisco Guerrero","ESP",4391,0],[13,"Jeronimo Gonzalez","ESP",3813,0],[14,"Juan Tello","ARG",3803,0],[15,"Jorge Nieto","ESP",3691,0],[16,"Maximiliano Arce Simo","ARG",3600,1],[17,"Gonzalo Alfonso","ARG",3598,-1],[18,"Javier Leal","ESP",3488,0],[19,"Valentino Gabriel Libaak","ARG",3358,1],[20,"Lucas Campagnolo","BRA",3346,-1],[21,"Eduardo Alonso","ESP",3328,0],[22,"Lucas Bergamini","BRA",3101,1],[23,"Aimar Goñi Lacabe","ESP",2920,1],[24,"Jairo Bautista","ESP",2891,-2],[25,"Javier Garrido","ESP",2683,0],[26,"Javier Garcia","ESP",2448,0],[27,"Juanlu Esbri","ESP",2380,0],[28,"Inigo Jofre","UAE",2368,0],[29,"Carlos Daniel Gutierrez","ARG",2253,0],[30,"Jose Jimenez Casas","ESP",2158,0]],"female":[[1,"Gemma Triay Pons","ESP",15831,0],[1,"Delfina Brea Senesi","ARG",15831,0],[3,"Beatriz Gonzalez Fernandez","ESP",13926,0],[4,"Ariana Sanchez Fallada","ESP",12333,0],[5,"Claudia Fernandez Sanchez","ESP",12306,0],[6,"Andrea Ustero Prieto","ESP",12096,0],[7,"Paula Josemaria Martin","ESP",11223,0],[8,"Martina Calvo Santamaria","ESP",8636,0],[9,"Claudia Jensen","ARG",5548,1],[10,"Sofia Araujo","POR",5423,-1],[11,"Marta Ortega Gallego","ESP",4693,0],[12,"Tamara Icardo Alcorisa","ESP",4618,0],[13,"Alejandra Alonso De Villa","ESP",3966,0],[14,"Marina Guinart España","ESP",3936,0],[15,"Veronica Virseda","ESP",3296,0],[16,"Aranzazu Osoro Ulrich","ARG",3273,1],[17,"Alejandra Salazar Bengoechea","ESP",3266,-1],[18,"Beatriz Caldera Sanchez","ESP",3233,0],[19,"Carmen Goenaga Garcia","ESP",3083,0],[20,"Raquel Eugenio Barrera","ESP",2918,0],[21,"Nuria Rodriguez","ESP",2836,1],[22,"Giulia Dal Pozzo","ITA",2820,1],[23,"Victoria Iglesias Segador","ESP",2696,-2],[24,"Lorena Rufo Ortiz","ESP",2583,1],[25,"Martina Fassio Goyeneche","ARG",2498,-1],[26,"Jimena Velasco Postiguillo","ESP",2383,1],[27,"Patricia Llaguno Zielinski","ESP",2368,-1],[28,"Jessica Castello Lopez","ESP",2213,3],[29,"Lucia Sainz Pelegri","ESP",2188,-1],[30,"Marta Barrera De La Fuente","ESP",2146,-1]]};
 function rRanking(){
   const L=RKD[RK.g]||[],top=L[0]?L[0][3]:1;
   const podium=[[L[1],2],[L[0],1],[L[2],3]].filter(z=>z[0]).map(([x,k])=>`<div class="pod p${k}">${av(x[1],x[2])}<b>${esc(x[1].split(' ').slice(0,2).join(' '))}</b><small>${x[3].toLocaleString('es-ES')} pts</small><i>${x[0]}</i></div>`).join('');
@@ -719,6 +738,7 @@ document.addEventListener('click',e=>{
   if(b.dataset.day){const n=b.dataset.day;const act=(LIVE.days||[]).find(d=>d.active);DAY=act&&String(act.n)===n?null:n;LIVE={...LIVE,matches:[]};PREV={};showAll=false;render();startPoll();return}
   if(b.dataset.unfav){FAV.delete(b.dataset.unfav);saveFav();render();return}
   if(b.id==='notif'){askNotify();return}
+  if(b.id==='ptest'){pushTest();return}
   if(b.dataset.pt){point(+b.dataset.pt);return}
   if(b.dataset.sub){sub=b.dataset.sub;render();scrollTo(0,0);return}
   if(b.id==='refresh'){poll(true);return}
@@ -745,6 +765,8 @@ setInterval(()=>{if(tab==='directo'&&sub==='auto'&&!document.querySelector('deta
 
 /* ---------- arranque ---------- */
 render();startPoll();
+fetch('/ranking.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{if(d&&d.male&&d.male.length&&d.female&&d.female.length){RKD=d;if(tab==='ranking')render()}}).catch(()=>{});
+if(store.get('bandeja-notify',false)&&canNotify()&&Notification.permission==='granted')setTimeout(()=>pushSub(false),2500);
 fetch('/api/results').then(r=>r.json()).then(d=>{if(d.calendar&&d.calendar.length)CAL=d.calendar;mergeResults(d.results);if(tab==='torneos'||tab==='titulos')render()}).catch(()=>{});
 }
 </script>
