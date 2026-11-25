@@ -1,0 +1,13 @@
+# Reloj de Por3: cada 5 minutos pide a la web que revise los partidos y mande los avisos.
+name: Avisos Por3
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Revisar partidos y avisar
+        run: curl -sS --max-time 60 "https://bandeja-live-puce.vercel.app/api/tick" || true
