@@ -368,6 +368,7 @@ let SWR=null;
 if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').then(r=>SWR=r).catch(()=>{})}
 const canNotify=()=>'Notification' in window;
 function notify(title,body){
+  return; // avisos quitados: para eso se usa la app oficial
   toast(title+' · '+body);
   if(store.get('bandeja-push',false))return;
   if(!canNotify()||Notification.permission!=='granted'||!store.get('bandeja-notify',false))return;
@@ -492,11 +493,9 @@ function rDirecto(){
     h+=`<p class="note">Toca un partido para ver sus estadísticas. Toca ☆ para seguir a una pareja.</p>`;
   }
   const nOn=store.get('bandeja-notify',false)&&canNotify()&&Notification.permission==='granted';
-  h+=`<details class="card" style="margin-top:6px"><summary>Favoritos y avisos</summary>
+  h+=`<details class="card" style="margin-top:6px"><summary>Favoritos</summary>
     ${FAV.size?`<div class="seg" style="flex-wrap:wrap">${[...FAV].map(f=>`<button class="chip" data-unfav="${esc(f)}" aria-label="Quitar ${esc(f)}">★ ${esc(titleName(f.replace(/\b\w/g,c=>c.toUpperCase())))} ✕</button>`).join('')}</div>`:'<p class="meta">Aún no sigues a nadie. Toca ☆ junto a una pareja en cualquier partido.</p>'}
-    <button class="btn ${nOn?'ghost':'ball'}" id="notif" style="width:100%">${nOn?'Avisos activados ✓':'Avisarme cuando jueguen mis favoritos'}</button>
-    ${nOn?'<button class="btn ghost sm" id="ptest" style="width:100%;margin-top:8px">Mandarme un aviso de prueba</button>':''}
-    <p class="meta" style="margin-top:8px">Te avisa aunque tengas la app cerrada: cuando empieza un partido de tus favoritos, al acabar cada set y el resultado final. En iPhone, abre la app desde la pantalla de inicio.</p></details>
+    <p class="meta" style="margin-top:8px">Tus favoritos salen marcados con ★ en los partidos y en la porra.</p></details>
   <details class="card" id="cfgLive"><summary>Ajustes del directo</summary>
     <form id="cfgL"><label for="tid">Código del torneo</label><input id="tid" placeholder="FIP-2026-1234" value="${esc(CFG.id)}" autocomplete="off">
     <p class="meta" style="margin:6px 0 10px">Déjalo vacío: la app elige sola el torneo que se está jugando.</p>
@@ -539,7 +538,7 @@ function drawSheet(){
   const s=STATS,m=s.m;
   const names=m?m.teams.map(t=>t.players.map(esc).join(' / ')):['',''];
   let h=`<div class="row-l" style="margin:0 0 8px"><strong style="color:var(--ink)">${m?esc(tr(m.round)):'Estadísticas'}</strong><button class="btn ghost sm" id="closeSheet">Cerrar</button></div>
-  ${m?`<div class="seg" style="margin:0 0 6px">${m.status!=='finished'?`<button class="chip" id="pinM" aria-pressed="${PIN===m.id}">📌 ${PIN===m.id?'En tu pantalla de bloqueo':'Ver en pantalla de bloqueo'}</button>`:''}<button class="chip" id="shareM">↗ Compartir</button></div>`:''}
+  ${m?`<div class="seg" style="margin:0 0 6px"><button class="chip" id="shareM">↗ Compartir</button></div>`:''}
   <div class="sx" style="border:0"><span style="font-size:12px;color:var(--court);font-weight:700">●</span><span class="l" style="color:var(--ink);text-align:left">${names[0]}</span><span></span></div>
   <div class="sx" style="border:0;padding-top:0"><span style="font-size:12px;color:var(--ball);font-weight:700">●</span><span class="l" style="color:var(--ink);text-align:left">${names[1]}</span><span></span></div>`;
   if(m)h+=`<div class="seg" role="tablist" style="margin:6px 0 4px"><button class="chip" data-sm="st" aria-pressed="${SM==='st'}">📊 Estadísticas</button><button class="chip" data-sm="h2h" aria-pressed="${SM==='h2h'}">⚔️ Cara a cara</button></div>`;
@@ -807,7 +806,7 @@ async function pinMatch(m){
   if(p!=='granted'){toast('Necesito permiso de avisos para ponerlo en la pantalla de bloqueo');return}
   PIN=m.id;PINK='';store.set('bandeja-pin',PIN);showPin(m);toast('📌 Partido en tu pantalla de bloqueo');drawSheet();
 }
-function pinTick(){if(!PIN||!LIVE)return;const m=(LIVE.matches||[]).find(x=>x.id===PIN);if(!m)return;
+function pinTick(){return;if(!PIN||!LIVE)return;const m=(LIVE.matches||[]).find(x=>x.id===PIN);if(!m)return;
   const n=Math.max(...m.teams.map(t=>t.sets.length),0);const k=m.status+'|'+n;if(k===PINK)return;const first=!PINK;PINK=k;
   if(!first&&store.get('bandeja-push',false)&&matchFav(m)){if(m.status==='finished'){PIN=null;store.set('bandeja-pin',null)}return}
   if(m.status==='finished'){showPin(m,true);PIN=null;store.set('bandeja-pin',null)}else showPin(m)}
@@ -861,7 +860,12 @@ setInterval(()=>{if(tab==='directo'&&sub==='auto'&&!document.querySelector('deta
 if(pq&&!PG)tab='porra';
 render();startPoll();
 fetch('/ranking.json',{cache:'no-store'}).then(r=>r.json()).then(d=>{if(d&&d.male&&d.male.length&&d.female&&d.female.length){RKD=d;if(tab==='ranking')render()}}).catch(()=>{});
-if(store.get('bandeja-notify',false)&&canNotify()&&Notification.permission==='granted')setTimeout(()=>pushSub(false),2500);
+// Avisos quitados: se borra la suscripción de este móvil y cualquier aviso que quede en pantalla.
+setTimeout(async()=>{try{store.set('bandeja-notify',false);store.set('bandeja-push',false);store.set('bandeja-pin',null);
+  if(!('serviceWorker' in navigator))return;const reg=await navigator.serviceWorker.ready;
+  try{(await reg.getNotifications()).forEach(n=>n.close())}catch(e){}
+  const s=reg.pushManager&&await reg.pushManager.getSubscription();
+  if(s){fetch('/api/push',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'unsub',endpoint:s.endpoint})}).catch(()=>{});await s.unsubscribe()}}catch(e){}},1500);
 fetch('/api/results').then(r=>r.json()).then(d=>{if(d.calendar&&d.calendar.length)CAL=d.calendar;mergeResults(d.results);if(tab==='torneos'||tab==='titulos'||tab==='ranking')render()}).catch(()=>{});
 }
 </script>
