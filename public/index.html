@@ -794,10 +794,11 @@ const sname=t=>t.players.map(surname).join('/');
 const BD=s=>String(s).replace(/[0-9]/g,d=>String.fromCodePoint(0x1D7EC+Number(d)));
 const UP=t=>t.players.map(p=>surname(p).toUpperCase()).join(' / ');
 function pinText(m){const[a,b]=m.teams;
-  const row=T=>`${T.serving&&m.status==='live'?'◉':'○'} ${UP(T)}   ${T.sets.map(BD).join(' ┃ ')||BD(0)}${m.status==='live'&&T.point?`  ‹${T.point}›`:''}`;
+  const row=T=>`${T.serving&&m.status==='live'?'◉':'○'} ${UP(T)}   ${T.sets.map(BD).join(' ┃ ')||BD(0)}`;
   const st=m.status==='live'?'⚡ EN JUEGO':m.status==='finished'?'🏁 FINAL':'⏱ PRÓXIMO · '+tr(m.when||'');
   return{title:`${st} · ${String(tr(m.court||'')).toUpperCase()}`,body:row(a)+'\n'+row(b)}}
 async function showPin(m,final){if(!SWR||!SWR.showNotification||Notification.permission!=='granted')return;const x=pinText(m);
+  try{(await SWR.getNotifications({tag:'por3-pin'})).forEach(n=>n.close())}catch(e){}
   try{await SWR.showNotification(x.title,{body:x.body,vibrate:final?[90,50,90]:undefined,tag:'por3-pin',renotify:!!final,silent:!final,requireInteraction:!final,icon:'/icon-192.png',badge:'/icon-192.png',data:{url:'/'}})}catch(e){}}
 async function pinMatch(m){
   if(!canNotify()){toast('Este móvil no permite avisos aquí. En iPhone, añade la app a la pantalla de inicio primero.');return}
@@ -807,7 +808,8 @@ async function pinMatch(m){
   PIN=m.id;PINK='';store.set('bandeja-pin',PIN);showPin(m);toast('📌 Partido en tu pantalla de bloqueo');drawSheet();
 }
 function pinTick(){if(!PIN||!LIVE)return;const m=(LIVE.matches||[]).find(x=>x.id===PIN);if(!m)return;
-  const k=m.status+m.teams.map(t=>t.point+'|'+t.sets.join(',')).join('/');if(k===PINK)return;PINK=k;
+  const n=Math.max(...m.teams.map(t=>t.sets.length),0);const k=m.status+'|'+n;if(k===PINK)return;const first=!PINK;PINK=k;
+  if(!first&&store.get('bandeja-push',false)&&matchFav(m)){if(m.status==='finished'){PIN=null;store.set('bandeja-pin',null)}return}
   if(m.status==='finished'){showPin(m,true);PIN=null;store.set('bandeja-pin',null)}else showPin(m)}
 async function shareMatch(m){const x=pinText(m);const text=`${x.title}\n${x.body}\nSíguelo en directo en Por3:`;
   try{if(navigator.share){await navigator.share({title:'Por3',text,url:location.origin});return}await navigator.clipboard.writeText(text+' '+location.origin);toast('Copiado, ya puedes pegarlo')}catch(e){}}

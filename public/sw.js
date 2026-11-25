@@ -1,6 +1,6 @@
 // Service worker de Por3: guarda la app para que abra al instante y funcione sin cobertura.
 // Los datos (/api/...) siempre se piden a la red para que el marcador esté al día.
-const CACHE = 'por3-v4';
+const CACHE = 'por3-v5';
 const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -31,7 +31,8 @@ self.addEventListener('notificationclick', e => {
 self.addEventListener('push', e => {
   let d = {};
   try { d = e.data ? e.data.json() : {}; } catch { d = { body: e.data && e.data.text() }; }
-  e.waitUntil(self.registration.showNotification(d.title || 'Por3', {
+  // Un solo aviso por partido: se borra el anterior antes de poner el nuevo.
+  e.waitUntil(self.registration.getNotifications(d.tag ? { tag: d.tag } : {}).then(old => { if (d.tag) old.forEach(n => n.close()); }).catch(() => {}).then(() => self.registration.showNotification(d.title || 'Por3', {
     body: d.body || '', tag: d.tag, renotify: !!d.tag, icon: '/icon-192.png', badge: '/icon-192.png', data: { url: d.url || '/' }
-  }));
+  })));
 });
